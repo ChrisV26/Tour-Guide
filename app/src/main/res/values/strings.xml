@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TourGuide</string>
+    <string name="Main_Menu_Icon_Map">Icon</string>
+    <string name="title_activity_map_tour">Map</string>
+</resources>
