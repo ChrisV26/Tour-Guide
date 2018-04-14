@@ -37,7 +37,14 @@
 
         <activity
             android:name=".MapTour"
-            android:label="@string/title_activity_map_tour"></activity>
+            android:label="@string/title_activity_map_tour">
+        </activity>
+
+        <activity
+            android:name=".MapTourList"
+            android:label="@string/Tour_Map_List">
+        </activity>
+
     </application>
 
 </manifest>

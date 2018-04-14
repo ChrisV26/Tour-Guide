@@ -2,4 +2,6 @@
     <string name="app_name">TourGuide</string>
     <string name="Main_Menu_Icon_Map">Icon</string>
     <string name="title_activity_map_tour">Map</string>
+    <string name="Tour_Map_List">Choose your Tour</string>
+    <string name="ImageButton_1">Plaka-Monastiraki</string>
 </resources>

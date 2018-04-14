@@ -18,7 +18,7 @@ public  class MainMenu extends AppCompatActivity {
      * The Map Layout is showed
      */
     public void Click_Map(View view) {
-        Intent map_layout=new Intent(this,MapTour.class);
-        startActivity(map_layout);
+        Intent MapChoice=new Intent(this,MapTourList.class);
+        startActivity(MapChoice);
     }
 }
