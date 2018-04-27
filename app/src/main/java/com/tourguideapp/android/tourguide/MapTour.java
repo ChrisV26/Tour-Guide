@@ -58,6 +58,14 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Receive the lat long coordinates from MapTourList
+        Bundle get_long_lang=new Bundle();
+        double Begin_lat=get_long_lang.getDouble("Begin_lat");
+        double Begin_lot=get_long_lang.getDouble("Begin_lot");
+        double End_lat=get_long_lang.getDouble("End_lat");
+        double End_lott=get_long_lang.getDouble("End_lot");
+
         setContentView(R.layout.activity_map_tour);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -94,7 +102,6 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
-
 
         /* updating every 2 minutes the current location of the user */
         mLocationRequest = new LocationRequest();

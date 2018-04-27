@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by Chris on 22/3/2018.
- */
 
 
 /** Receives a JSONObject and returns a list of lists containing latitude and longitude */
