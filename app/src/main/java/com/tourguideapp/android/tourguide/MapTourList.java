@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-
+import com.google.android.gms.maps.model.LatLng;
 
 
 public class MapTourList extends AppCompatActivity
@@ -36,22 +36,24 @@ public class MapTourList extends AppCompatActivity
         switch(view.getId())
         {
             case R.id.First_Tour:
-                lat_long.putDouble("Begin_lat",37.970681);
-                lat_long.putDouble("Begin_long",23.729414);
-                lat_long.putDouble("End_lat",37.97682);
-                lat_long.putDouble("End_long",23.724538);
-                TourChoice.putExtras(lat_long);
+                // send Plaka-Monastiraki coordinates
+                lat_long.putParcelable("Start_Location",new LatLng(37.970681,23.729414));
+                lat_long.putParcelable("Dest_Location",new LatLng(37.97682,23.724538));
+                TourChoice.putExtra("First_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
             case R.id.Second_Tour:
-                lat_long.putDouble("lat",17.03);
+                // send Syntagma-Thisio coordinates
+                lat_long.putParcelable("Start_Location",new LatLng(37.9757,23.7339));
+                lat_long.putParcelable("Dest_Location",new LatLng(37.9758,23.7192));
                 TourChoice.putExtras(lat_long);
                 startActivity(TourChoice);
                 break;
 
             case R.id.Thid_Tour:
-                lat_long.putDouble("lat",15.03);
+                // send Akropolis coordinates
+                lat_long.putParcelable("Start_Location",new LatLng(37.983810,23.727539));
                 TourChoice.putExtras(lat_long);
                 startActivity(TourChoice);
                 break;

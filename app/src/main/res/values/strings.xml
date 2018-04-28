@@ -4,6 +4,6 @@
     <string name="title_activity_map_tour">Map</string>
     <string name="Tour_Map_List">Choose your Tour</string>
     <string name="ImageButton_1">Plaka-Monastiraki</string>
-    <string name="ImageButton_2"> Syntagma-Thisio </string>
-    <string name="ImageButton_3"> Akropoli </string>
+    <string name="ImageButton_2"> Syntagma-Thiseio </string>
+    <string name="ImageButton_3"> Akropolis </string>
 </resources>

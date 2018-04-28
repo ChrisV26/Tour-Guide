@@ -2,6 +2,7 @@ package com.tourguideapp.android.tourguide;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -9,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -44,8 +46,8 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-public class MapTour extends FragmentActivity implements OnMapReadyCallback{
-
+public class MapTour extends FragmentActivity implements OnMapReadyCallback
+{
     protected GoogleMap mMap;
 
     protected Marker mCurrLocationMarker;
@@ -58,21 +60,21 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map_tour);
 
         // Receive the lat long coordinates from MapTourList
-        Bundle get_long_lang=new Bundle();
-        double Begin_lat=get_long_lang.getDouble("Begin_lat");
-        double Begin_lot=get_long_lang.getDouble("Begin_lot");
-        double End_lat=get_long_lang.getDouble("End_lat");
-        double End_lott=get_long_lang.getDouble("End_lot");
+        Bundle get_long_lang=getIntent().getParcelableExtra("First_Tour");
 
-        setContentView(R.layout.activity_map_tour);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        LatLng Start_position=get_long_lang.getParcelable("Start_Location");
+        LatLng Dest_position=get_long_lang.getParcelable("Dest_Location");
+        Log.i("Positions Received","Coordinates OK!");
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Construct a FusedLocationProviderClient.
+        // Construct a FusedLocationProviderClient
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Initializing the ArrayList
@@ -81,22 +83,23 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
 
         //stop location updates when Activity is no longer active
-        if ( mFusedLocationProviderClient != null) {
+        if ( mFusedLocationProviderClient != null)
+        {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
     }
 
-
     /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
+     *  Manipulates the map once available.
+     *  This callback is triggered when the map is ready to be used.
+     *  This is where we can add markers or lines, add listeners or move the camera.
      *  This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     *  installed Google Play services and returned to the app.
      */
     @Override
     public void onMapReady(GoogleMap googleMap)
@@ -130,7 +133,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
             mMap.setMyLocationEnabled(true);
         }
 
-        // Setting onclick event listener for the map
+        // Setting OnClick event listener for the map
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point)
@@ -191,14 +194,14 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
     }
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API*/
-    private String getUrl(LatLng origin, LatLng dest)
+    protected String getUrl(LatLng Start_position, LatLng Dest_position)
     {
 
         // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        String str_origin = "origin=" + Start_position.latitude + "," + Start_position.longitude;
 
         // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        String str_dest = "destination=" + Dest_position.latitude + "," + Dest_position.longitude;
 
         // Sensor enabled
         String sensor = "sensor=false";
@@ -215,13 +218,14 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback{
         return url;
     }
 
-    /* A method to download json data from the URL */
+    /* A method to download Json Data from the URL */
     private String downloadUrl(String strUrl) throws IOException
     {
         String data = "";
         InputStream iStream = null;
         HttpURLConnection urlConnection = null;
-        try {
+        try
+        {
             URL url = new URL(strUrl);
 
             // Creating an http connection to communicate with url

@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainMenu">
+        <activity
+            android:name=".MainMenu"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,12 +39,14 @@
 
         <activity
             android:name=".MapTour"
-            android:label="@string/title_activity_map_tour">
+            android:label="@string/title_activity_map_tour"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity
             android:name=".MapTourList"
-            android:label="@string/Tour_Map_List">
+            android:label="@string/Tour_Map_List"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>
