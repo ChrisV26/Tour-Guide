@@ -56,19 +56,31 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     protected FusedLocationProviderClient  mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
+    protected LatLng Start_position;
+    protected LatLng Dest_position;
+    protected double start_point_lat;
+    protected double start_point_lng;
+    protected double dest_point_lat;
+    protected double dest_point_lng;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_tour);
 
         // Receive the lat long coordinates from MapTourList
-        Bundle get_long_lang=getIntent().getParcelableExtra("First_Tour");
-
-        LatLng Start_position=get_long_lang.getParcelable("Start_Location");
-        LatLng Dest_position=get_long_lang.getParcelable("Dest_Location");
-        Log.i("Positions Received","Coordinates OK!");
-
+        Bundle get_long_lang=getIntent().getParcelableExtra("Second_Tour");
+        if(get_long_lang!=null)
+        {
+            Start_position = get_long_lang.getParcelable("Start_Location");
+            Dest_position = get_long_lang.getParcelable("Dest_Location");
+            Log.i("Positions Received", "Coordinates OK!");
+            start_point_lat=Start_position.latitude;
+            start_point_lng=Start_position.longitude;
+            dest_point_lat=Dest_position.latitude;
+            dest_point_lng=Dest_position.longitude;
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -113,7 +125,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         /* granting permission and enabling to find the current location */
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED)
             {
@@ -132,6 +145,9 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
             mMap.setMyLocationEnabled(true);
         }
+
+        mMap.addMarker(new MarkerOptions().position(new LatLng(start_point_lat,start_point_lng)));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(dest_point_lat,dest_point_lng)));
 
         // Setting OnClick event listener for the map
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {

@@ -47,14 +47,14 @@ public class MapTourList extends AppCompatActivity
                 // send Syntagma-Thisio coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.9757,23.7339));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.9758,23.7192));
-                TourChoice.putExtras(lat_long);
+                TourChoice.putExtra("Second_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
             case R.id.Thid_Tour:
                 // send Akropolis coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.983810,23.727539));
-                TourChoice.putExtras(lat_long);
+                TourChoice.putExtra("Third_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
         }
