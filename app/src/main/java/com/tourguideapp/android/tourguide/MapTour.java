@@ -1,8 +1,8 @@
 package com.tourguideapp.android.tourguide;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -10,11 +10,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,8 +31,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import android.app.AlertDialog;
-import android.widget.Toast;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,8 +42,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.json.JSONObject;
 
 public class MapTour extends FragmentActivity implements OnMapReadyCallback
 {
@@ -58,10 +55,10 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
     protected LatLng Start_position;
     protected LatLng Dest_position;
-    protected double start_point_lat;
-    protected double start_point_lng;
-    protected double dest_point_lat;
-    protected double dest_point_lng;
+    private double start_point_lat;
+    private double start_point_lng;
+    private double dest_point_lat;
+    private double dest_point_lng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,7 +67,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map_tour);
 
         // Receive the lat long coordinates from MapTourList
-        Bundle get_long_lang=getIntent().getParcelableExtra("Second_Tour");
+        Bundle get_long_lang=getIntent().getParcelableExtra("Chosen_Tour");
         if(get_long_lang!=null)
         {
             Start_position = get_long_lang.getParcelable("Start_Location");
@@ -146,66 +143,16 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
 
+        /* Adding the predefined markers of the user's Tour Choice  */
         mMap.addMarker(new MarkerOptions().position(new LatLng(start_point_lat,start_point_lng)));
         mMap.addMarker(new MarkerOptions().position(new LatLng(dest_point_lat,dest_point_lng)));
 
-        // Setting OnClick event listener for the map
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng point)
-            {
-
-                // Already two locations are marked
-                if (MarkerPoints.size() > 1) {
-                    MarkerPoints.clear();
-                    mMap.clear();
-                }
-
-                // Adding new item to the ArrayList
-                MarkerPoints.add(point);
-
-                // Creating MarkerOptions
-                MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
-                options.position(point);
-
-                /* For the start location, the color of marker is GREEN and
-                 * for the end location, the color of marker is RED.
-                 */
-                if (MarkerPoints.size() == 1)
-                {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                }
-                else if (MarkerPoints.size() == 2)
-                {
-                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }
-
-                // Add new marker to the Google Map Android API V2
-                mMap.addMarker(options);
-
-                // Checks, whether start and end locations are captured
-                if (MarkerPoints.size() >= 2)
-                {
-                    LatLng origin = MarkerPoints.get(0);
-                    LatLng dest = MarkerPoints.get(1);
-
-                    // Getting URL to the Google Directions API
-                    String url = getUrl(origin, dest);
-                    Log.d("onMapClick", url.toString());
-                    FetchUrl FetchUrl = new FetchUrl();
-
-                    // Start downloading json data from Google Directions API
-                    FetchUrl.execute(url);
-                    //move map camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-                }
-
-            }
-        });
-
+        /* Send LatLng and fetch directions for the markers  */
+        String url = getUrl(Start_position,Dest_position);
+        FetchUrl FetchUrl = new FetchUrl();
+        FetchUrl.execute(url);
+        //move map camera
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
     }
 

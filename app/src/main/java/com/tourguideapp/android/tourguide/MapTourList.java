@@ -39,7 +39,7 @@ public class MapTourList extends AppCompatActivity
                 // send Plaka-Monastiraki coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.970681,23.729414));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.97682,23.724538));
-                TourChoice.putExtra("First_Tour",lat_long);
+                TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
@@ -47,14 +47,15 @@ public class MapTourList extends AppCompatActivity
                 // send Syntagma-Thisio coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.9757,23.7339));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.9758,23.7192));
-                TourChoice.putExtra("Second_Tour",lat_long);
+                TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
             case R.id.Thid_Tour:
                 // send Akropolis coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.983810,23.727539));
-                TourChoice.putExtra("Third_Tour",lat_long);
+                lat_long.putParcelable("Dest_Location",new LatLng(37.971341,23.7365537));
+                TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
         }
