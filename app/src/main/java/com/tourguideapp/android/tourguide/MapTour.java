@@ -53,6 +53,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     protected FusedLocationProviderClient  mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
+    protected LatLng Current_Location;
     protected LatLng Start_position;
     protected LatLng Dest_position;
     private double start_point_lat;
@@ -72,7 +73,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         {
             Start_position = get_long_lang.getParcelable("Start_Location");
             Dest_position = get_long_lang.getParcelable("Dest_Location");
-            Log.i("Positions Received", "Coordinates OK!");
+            Log.i("Coordinates", "Coordinates OK!");
             start_point_lat=Start_position.latitude;
             start_point_lng=Start_position.longitude;
             dest_point_lat=Dest_position.latitude;
@@ -151,6 +152,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
+
         //move map camera
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
@@ -285,7 +287,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
         // Executes in UI thread, after the parsing process
         @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+        protected void onPostExecute(List<List<HashMap<String, String>>> result)
+        {
             ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
 
@@ -322,7 +325,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             {
                 mMap.addPolyline(lineOptions);
             }
-            else {
+            else
+            {
                 Log.d("onPostExecute","without Polylines drawn");
             }
         }
@@ -346,15 +350,19 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 //Place current location marker
-                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                Current_Location = new LatLng(location.getLatitude(), location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
+                markerOptions.position(Current_Location);
                 markerOptions.title("Current Position");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                 mCurrLocationMarker = mMap.addMarker(markerOptions);
 
+                // Send LatLong of current position and draw the route between current and start location
+                String url_2=getUrl(Current_Location,Start_position);
+                FetchUrl FetchUrl = new FetchUrl();
+                FetchUrl.execute(url_2);
                 //move map camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 11));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Location,11));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
             }
         }
