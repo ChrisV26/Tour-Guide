@@ -30,7 +30,7 @@ public class MapTourList extends AppCompatActivity
         //Creating an Intent to go from MapTourList to MapTour
         Intent TourChoice = new Intent(this, MapTour.class);
 
-        //Creating a bundle to send the longitude and latitude of the Begin/End place points to MapTour
+        //Creating a bundle to send the longitude and latitude of the Start/End place points to MapTour
         Bundle lat_long=new Bundle();
 
         switch(view.getId())

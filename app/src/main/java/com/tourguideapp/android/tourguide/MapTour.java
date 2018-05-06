@@ -116,13 +116,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     {
         mMap = googleMap;
 
-        /* updating every 2 minutes the current location of the user */
+        // updating every 2 minutes the current location of the user
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(120000); // two minute interval
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        /* granting permission and enabling to find the current location */
+        // granting permission and enabling to find the current location
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -144,21 +144,28 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
 
-        /* Adding the predefined markers of the user's Tour Choice  */
-        mMap.addMarker(new MarkerOptions().position(new LatLng(start_point_lat,start_point_lng)));
-        mMap.addMarker(new MarkerOptions().position(new LatLng(dest_point_lat,dest_point_lng)));
+        // Adding and Styling the predefined markers of the user's Tour Choice
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(start_point_lat,start_point_lng))
+                .title("Start")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        );
 
-        /* Send LatLng and fetch directions for the markers  */
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(dest_point_lat,dest_point_lng))
+                .title("End"));
+
+        // Send LatLng and fetch directions for the markers
         String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
 
-        //move map camera
+        // move map camera
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
     }
 
-    /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API*/
+    /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
     {
 
@@ -224,7 +231,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         return data;
     }
 
-    // Fetches data from URL passed
+    /* Fetches data from URL passed */
     private class FetchUrl extends AsyncTask<String, Void, String> {
 
         @Override
@@ -255,9 +262,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * A class to parse the Google Places in JSON format
-     */
+    /* A class to parse the Google Places in JSON format */
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
         // Parsing the data in non-ui thread
@@ -285,7 +290,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             return routes;
         }
 
-        // Executes in UI thread, after the parsing process
+        /* Executes in UI thread, after the parsing process */
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result)
         {
@@ -350,12 +355,14 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 //Place current location marker
-                Current_Location = new LatLng(location.getLatitude(), location.getLongitude());
+                Current_Location = new LatLng(location.getLatitude(),location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(Current_Location);
                 markerOptions.title("Current Position");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                 mCurrLocationMarker = mMap.addMarker(markerOptions);
+                mCurrLocationMarker.showInfoWindow();
+
 
                 // Send LatLong of current position and draw the route between current and start location
                 String url_2=getUrl(Current_Location,Start_position);
@@ -390,7 +397,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Prompt the user once explanation has been shown
+                                // Prompt the user once explanation has been shown
                                 ActivityCompat.requestPermissions(MapTour.this,
                                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION );
@@ -448,4 +455,4 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
 
 
-}
+} //end of class
