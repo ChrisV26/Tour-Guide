@@ -33,19 +33,13 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MapTour extends FragmentActivity implements OnMapReadyCallback
 {
-    protected GoogleMap mMap;
+    protected static GoogleMap mMap;
 
     protected Marker mCurrLocationMarker;
     protected Location mLastLocation;
@@ -53,6 +47,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     protected FusedLocationProviderClient  mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
+    protected LatLng point;
     protected LatLng Current_Location;
     protected LatLng Start_position;
     protected LatLng Dest_position;
@@ -155,12 +150,23 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 .position(new LatLng(dest_point_lat,dest_point_lng))
                 .title("End"));
 
+        /*
+        MarkerPoints.add(point);
+
+        // Creating MarkerOptions
+        MarkerOptions options = new MarkerOptions();
+
+        // Setting the position of the marker
+        options.position(point);
+
+        mMap.addMarker(options);*/
+
         // Send LatLng and fetch directions for the markers
         String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
 
-        // move map camera
+        // move Map Camera
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
     }
@@ -175,11 +181,23 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         // Destination of route
         String str_dest = "destination=" + Dest_position.latitude + "," + Dest_position.longitude;
 
+        // Adding Waypoints
+        String waypoints="";
+        for(int i=2; i<MarkerPoints.size(); ++i)
+        {
+             point=MarkerPoints.get(i);
+            if(i==2)
+            {
+                waypoints="waypoints=";
+                waypoints+=point.latitude+","+point.latitude+"|";
+            }
+        }
+
         // Sensor enabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor+"&"+waypoints;
 
         // Output format
         String output = "json";
@@ -190,82 +208,11 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         return url;
     }
 
-    /* A method to download Json Data from the URL */
-    private String downloadUrl(String strUrl) throws IOException
-    {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try
-        {
-            URL url = new URL(strUrl);
-
-            // Creating an http connection to communicate with url
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            // Connecting to url
-            urlConnection.connect();
-
-            // Reading data from url
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-            Log.d("downloadUrl", data.toString());
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    /* Fetches data from URL passed */
-    private class FetchUrl extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... url) {
-
-            // For storing data from web service
-            String data = "";
-
-            try {
-                // Fetching the data from web service
-                data = downloadUrl(url[0]);
-                Log.d("Background Task data", data.toString());
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
-            }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            ParserTask parserTask = new ParserTask();
-
-            // Invokes the thread for parsing the JSON data
-            parserTask.execute(result);
-
-        }
-    }
-
     /* A class to parse the Google Places in JSON format */
-    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+    protected static class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>>
+    {
 
-        // Parsing the data in non-ui thread
+        // Parsing the data in Non-UI thread
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
 
@@ -274,17 +221,17 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
             try {
                 jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask",jsonData[0].toString());
+                Log.d("ParserTask", jsonData[0].toString());
                 DataParser parser = new DataParser();
                 Log.d("ParserTask", parser.toString());
 
                 // Starts parsing data
                 routes = parser.parse(jObject);
-                Log.d("ParserTask","Executing routes");
-                Log.d("ParserTask",routes.toString());
+                Log.d("ParserTask", "Executing routes");
+                Log.d("ParserTask", routes.toString());
 
             } catch (Exception e) {
-                Log.d("ParserTask",e.toString());
+                Log.d("ParserTask", e.toString());
                 e.printStackTrace();
             }
             return routes;
@@ -292,8 +239,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
         /* Executes in UI thread, after the parsing process */
         @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result)
-        {
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
 
@@ -321,25 +267,22 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 lineOptions.width(10);
                 lineOptions.color(Color.RED);
 
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
+                Log.d("onPostExecute", "onPostExecute lineoptions decoded");
 
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            if(lineOptions != null)
-            {
+            if (lineOptions != null) {
                 mMap.addPolyline(lineOptions);
-            }
-            else
-            {
-                Log.d("onPostExecute","without Polylines drawn");
+            } else {
+                Log.d("onPostExecute", "without Polylines drawn");
             }
         }
     }
 
 
 
-    /* Implementing the LocationCallBack which handles current place of the user */
+    /* Implementing onLocationResult which handles current place of the user */
     LocationCallback mLocationCallback = new LocationCallback()
     {
         @Override
@@ -390,7 +333,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+                // sees the explanation, try again to request the permission
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission Needed")
                         .setMessage("This app needs the Location permission, please accept to use location functionality")
@@ -408,7 +351,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             }
             else
             {
-                // No explanation needed, we can request the permission.
+                // No explanation needed, we can request the permission
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION );
@@ -418,12 +361,12 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
     /* Implementing onRequestPermissionsResult where we handle user's choice for permission  */
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION:
             {
-                // If request is cancelled, the result arrays are empty.
+                // If request is cancelled, the result arrays are empty
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     // permission was granted
@@ -440,7 +383,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 {
                     // permission denied,Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
                 }
                 return;
             }
