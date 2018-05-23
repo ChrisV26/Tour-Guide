@@ -41,13 +41,15 @@
         <activity
             android:name=".MapTour"
             android:label="@string/title_activity_map_tour"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainMenu">
         </activity>
 
         <activity
             android:name=".MapTourList"
             android:label="@string/Tour_Map_List"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MapTour">
         </activity>
 
     </application>

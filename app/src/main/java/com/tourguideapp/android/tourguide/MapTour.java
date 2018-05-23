@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.clustering.ClusterManager;
 
 import org.json.JSONObject;
 
@@ -47,7 +48,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     protected FusedLocationProviderClient  mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
-    protected LatLng point;
+//    protected LatLng point;
     protected LatLng Current_Location;
     protected LatLng Start_position;
     protected LatLng Dest_position;
@@ -62,7 +63,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_tour);
 
-        // Receive the lat long coordinates from MapTourList
+        // Receive the Lat Long coordinates from MapTourList
         Bundle get_long_lang=getIntent().getParcelableExtra("Chosen_Tour");
         if(get_long_lang!=null)
         {
@@ -84,7 +85,6 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
         // Initializing the ArrayList
         MarkerPoints = new ArrayList<>();
-
     }
 
     @Override
@@ -150,16 +150,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 .position(new LatLng(dest_point_lat,dest_point_lng))
                 .title("End"));
 
-        /*
-        MarkerPoints.add(point);
-
-        // Creating MarkerOptions
-        MarkerOptions options = new MarkerOptions();
-
-        // Setting the position of the marker
-        options.position(point);
-
-        mMap.addMarker(options);*/
+      /*  mMap.addMarker(new MarkerOptions()
+                .position(point));*/
 
         // Send LatLng and fetch directions for the markers
         String url = getUrl(Start_position,Dest_position);
@@ -169,6 +161,42 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         // move Map Camera
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+    }
+
+    // Declare a variable for the cluster manager.
+    private ClusterManager<MyItem> mClusterManager;
+
+    private void setUpClusterer() {
+        // Position the map.
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        // Add cluster items (markers) to the cluster manager.
+        addItems();
+    }
+
+    private void addItems() {
+
+        // Set some lat/lng coordinates to start with.
+        double lat = 51.5145160;
+        double lng = -0.1270060;
+
+        // Add ten cluster items in close proximity, for purposes of this example.
+        for (int i = 0; i < 10; i++) {
+            double offset = i / 60d;
+            lat = lat + offset;
+            lng = lng + offset;
+            MyItem offsetItem = new MyItem(lat, lng);
+            mClusterManager.addItem(offsetItem);
+        }
     }
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
@@ -182,22 +210,21 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         String str_dest = "destination=" + Dest_position.latitude + "," + Dest_position.longitude;
 
         // Adding Waypoints
-        String waypoints="";
+      /*  String waypoints="";
         for(int i=2; i<MarkerPoints.size(); ++i)
         {
              point=MarkerPoints.get(i);
             if(i==2)
-            {
-                waypoints="waypoints=";
-                waypoints+=point.latitude+","+point.latitude+"|";
-            }
-        }
+                waypoints = "waypoints=";
+                waypoints += point.latitude + "," + point.longitude + "|";
+
+        }*/
 
         // Sensor enabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor+"&"+waypoints;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor;
 
         // Output format
         String output = "json";

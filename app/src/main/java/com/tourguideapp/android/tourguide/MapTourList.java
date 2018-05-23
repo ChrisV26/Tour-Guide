@@ -2,7 +2,9 @@ package com.tourguideapp.android.tourguide;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import com.google.android.gms.maps.model.LatLng;
@@ -18,10 +20,29 @@ public class MapTourList extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_tour_list);
 
-        /* Declaring the Buttons for the MapTourList layout */
+        // Declaring the Buttons for the MapTourList layout
         BtnFirstTour=findViewById(R.id.First_Tour);
         BtnSecondTour=findViewById(R.id.Second_Tour);
         BtnThirdTour=findViewById(R.id.Thid_Tour);
+
+        //  Declaring the "Up Button"
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    /* Implementing the "Up Button" to go back in Parent Activity */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /* Clicking the Image-Button shows the Route Map */

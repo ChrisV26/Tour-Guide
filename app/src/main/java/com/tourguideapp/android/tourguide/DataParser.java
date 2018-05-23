@@ -12,7 +12,7 @@ import java.util.List;
 
 
 
-/** Receives a JSONObject and returns a list of lists containing Latitude and Longitude */
+/** Receives a JSONObject and returns a List of Lists containing Latitude and Longitude */
 
 public class DataParser
 {
