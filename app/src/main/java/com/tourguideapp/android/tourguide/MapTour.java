@@ -45,10 +45,10 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     protected Marker mCurrLocationMarker;
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
-    protected FusedLocationProviderClient  mFusedLocationProviderClient;
+    protected FusedLocationProviderClient mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
-//    protected LatLng point;
+   protected LatLng point;
     protected LatLng Current_Location;
     protected LatLng Start_position;
     protected LatLng Dest_position;
@@ -56,6 +56,9 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     private double start_point_lng;
     private double dest_point_lat;
     private double dest_point_lng;
+    private  String correspond_waypoints;
+    // Declare a variable for the cluster manager.
+//    private ClusterManager<MyItem> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -69,11 +72,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         {
             Start_position = get_long_lang.getParcelable("Start_Location");
             Dest_position = get_long_lang.getParcelable("Dest_Location");
+            correspond_waypoints=get_long_lang.getString("Tour_Name");
             Log.i("Coordinates", "Coordinates OK!");
             start_point_lat=Start_position.latitude;
             start_point_lng=Start_position.longitude;
             dest_point_lat=Dest_position.latitude;
             dest_point_lng=Dest_position.longitude;
+
         }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -83,8 +88,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         // Construct a FusedLocationProviderClient
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Initializing the ArrayList
+        // Initializing the ArrayList and adding the corresponding Waypoints to each of the Chosen Tour
         MarkerPoints = new ArrayList<>();
+        if(correspond_waypoints.equals("First_Tour"))
+        {
+            MarkerPoints.add(new LatLng(37.978731, 23.724649));
+            MarkerPoints.add(new LatLng(37.978172, 23.722223));
+        }
     }
 
     @Override
@@ -150,10 +160,15 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 .position(new LatLng(dest_point_lat,dest_point_lng))
                 .title("End"));
 
-      /*  mMap.addMarker(new MarkerOptions()
-                .position(point));*/
 
-        // Send LatLng and fetch directions for the markers
+        // Adding the Waypoint Markers
+        for(int i=0; i<MarkerPoints.size(); ++i)
+        {
+            LatLng position=MarkerPoints.get(i);
+            addMarkerToMap(position);
+        }
+
+        // Send LatLng and fetch directions for the Markers
         String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
@@ -163,21 +178,29 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    // Declare a variable for the cluster manager.
-    private ClusterManager<MyItem> mClusterManager;
+    protected void addMarkerToMap(LatLng latlng)
+    {
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(latlng)
+                .title("title")
+                .snippet("snippet"));
+        //markers.add(marker);
 
-    private void setUpClusterer() {
+    }
+
+
+ /*   private void setUpClusterer() {
         // Position the map.
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+       mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
         // Initialize the manager with the context and the map.
         // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<MyItem>(this, mMap);
+        mClusterManager = new ClusterManager<>(this, mMap);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
-        mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);
+       *//* mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);*//*
 
         // Add cluster items (markers) to the cluster manager.
         addItems();
@@ -185,19 +208,22 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
     private void addItems() {
 
-        // Set some lat/lng coordinates to start with.
-        double lat = 51.5145160;
-        double lng = -0.1270060;
+       // Set some lat/lng coordinates to start with.
+      *//*  double lat = 51.5145160;
+        double lng = -0.1270060;*//*
+
+      double lat=Start_position.latitude;
+      double lng=Start_position.longitude;
 
         // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 4; i++) {
             double offset = i / 60d;
             lat = lat + offset;
             lng = lng + offset;
             MyItem offsetItem = new MyItem(lat, lng);
             mClusterManager.addItem(offsetItem);
         }
-    }
+    }*/
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
@@ -210,21 +236,25 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         String str_dest = "destination=" + Dest_position.latitude + "," + Dest_position.longitude;
 
         // Adding Waypoints
-      /*  String waypoints="";
-        for(int i=2; i<MarkerPoints.size(); ++i)
+      String waypoints="waypoints=";
+        for(int i=0; i<MarkerPoints.size(); ++i)
         {
-             point=MarkerPoints.get(i);
-            if(i==2)
+            point=MarkerPoints.get(i);
+            if(i==0)
                 waypoints = "waypoints=";
                 waypoints += point.latitude + "," + point.longitude + "|";
 
-        }*/
+        }
+
+
+        // Travel Mode-Walking
+        String mode="mode=walking";
 
         // Sensor enabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor+"&"+waypoints+"&"+mode;
 
         // Output format
         String output = "json";
@@ -324,7 +354,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                     mCurrLocationMarker.remove();
                 }
 
-                //Place current location marker
+                //Place current Location Marker
                 Current_Location = new LatLng(location.getLatitude(),location.getLongitude());
                 MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(Current_Location);

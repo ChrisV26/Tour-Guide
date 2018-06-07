@@ -3,10 +3,6 @@ package com.tourguideapp.android.tourguide;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
-/**
- * Created by Chris on 23/5/2018.
- */
-
 public class MyItem implements ClusterItem
 {
     private final LatLng mPosition;

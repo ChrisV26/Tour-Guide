@@ -51,7 +51,7 @@ public class MapTourList extends AppCompatActivity
         //Creating an Intent to go from MapTourList to MapTour
         Intent TourChoice = new Intent(this, MapTour.class);
 
-        //Creating a bundle to send the longitude and latitude of the Start/End place points to MapTour
+        //Creating a bundle to send the Longitude and Latitude of the Start/End Marker Points to MapTour
         Bundle lat_long=new Bundle();
 
         switch(view.getId())
@@ -60,6 +60,7 @@ public class MapTourList extends AppCompatActivity
                 // send Plaka-Monastiraki coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.970681,23.729414));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.97682,23.724538));
+                lat_long.putString("Tour_Name","First_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
@@ -68,14 +69,16 @@ public class MapTourList extends AppCompatActivity
                 // send Syntagma-Thisio coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.9757,23.7339));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.9758,23.7192));
+                lat_long.putString("Tour_Name","Second_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
             case R.id.Thid_Tour:
-                // send Akropolis coordinates
+                // send Akropolis-Zappeion coordinates
                 lat_long.putParcelable("Start_Location",new LatLng(37.983810,23.727539));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.971341,23.7365537));
+                lat_long.putString("Tour_Name","Third_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
