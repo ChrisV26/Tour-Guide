@@ -92,8 +92,27 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         MarkerPoints = new ArrayList<>();
         if(correspond_waypoints.equals("First_Tour"))
         {
-            MarkerPoints.add(new LatLng(37.978731, 23.724649));
-            MarkerPoints.add(new LatLng(37.978172, 23.722223));
+            MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
+            MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
+            MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
+            MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
+            MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+        }
+        else if(correspond_waypoints.equals("Second_Tour"))
+        {
+            MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
+            MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
+            MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
+            MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
+            MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
+        }
+        else
+        {
+            MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
+            MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
+            MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
+            MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
+            MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
         }
     }
 
@@ -183,7 +202,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title("title")
-                .snippet("snippet"));
+                .snippet("snippet")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
         //markers.add(marker);
 
     }
@@ -240,12 +260,11 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         for(int i=0; i<MarkerPoints.size(); ++i)
         {
             point=MarkerPoints.get(i);
-            if(i==0)
+           if(i==0)
                 waypoints = "waypoints=";
                 waypoints += point.latitude + "," + point.longitude + "|";
 
         }
-
 
         // Travel Mode-Walking
         String mode="mode=walking";
@@ -301,7 +320,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             PolylineOptions lineOptions = null;
 
             // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
+            for (int i = 0; i < result.size(); ++i) {
                 points = new ArrayList<>();
                 lineOptions = new PolylineOptions();
 
@@ -309,7 +328,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
                 List<HashMap<String, String>> path = result.get(i);
 
                 // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
+                for (int j = 0; j < path.size(); ++j) {
                     HashMap<String, String> point = path.get(j);
 
                     double lat = Double.parseDouble(point.get("lat"));
@@ -377,7 +396,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     };
 
 
-    /* Implementing checkLocationPermission where user has to confirm for permission to use his location  */
+    /* Implementing checkLocationPermission where user has to confirm for permission to use his Location  */
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private void checkLocationPermission()
     {

@@ -76,7 +76,7 @@ public class MapTourList extends AppCompatActivity
 
             case R.id.Thid_Tour:
                 // send Akropolis-Zappeion coordinates
-                lat_long.putParcelable("Start_Location",new LatLng(37.983810,23.727539));
+                lat_long.putParcelable("Start_Location",new LatLng(37.971532, 23.725749));
                 lat_long.putParcelable("Dest_Location",new LatLng(37.971341,23.7365537));
                 lat_long.putString("Tour_Name","Third_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
