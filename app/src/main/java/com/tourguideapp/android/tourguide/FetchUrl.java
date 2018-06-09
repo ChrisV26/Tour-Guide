@@ -34,7 +34,7 @@ public class FetchUrl extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        MapTour.ParserTask parserTask = new MapTour.ParserTask();
+       ParserTask parserTask = new ParserTask();
 
         // Invokes the thread for parsing the JSON data
         parserTask.execute(result);

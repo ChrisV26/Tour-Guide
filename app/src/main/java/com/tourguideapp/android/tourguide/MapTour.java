@@ -41,14 +41,13 @@ import java.util.List;
 public class MapTour extends FragmentActivity implements OnMapReadyCallback
 {
     protected static GoogleMap mMap;
-
     protected Marker mCurrLocationMarker;
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
     protected FusedLocationProviderClient mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
 
-   protected LatLng point;
+    protected LatLng point;
     protected LatLng Current_Location;
     protected LatLng Start_position;
     protected LatLng Dest_position;
@@ -56,9 +55,9 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     private double start_point_lng;
     private double dest_point_lat;
     private double dest_point_lng;
-    private  String correspond_waypoints;
+    private String correspond_waypoints;
     // Declare a variable for the cluster manager.
-//    private ClusterManager<MyItem> mClusterManager;
+    //private ClusterManager<MyItem> mClusterManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -114,6 +113,11 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
             MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
         }
+    }
+
+    /* Send the var mMap to ParserTask Class*/
+    public static GoogleMap getmMap() {
+        return mMap;
     }
 
     @Override
@@ -197,6 +201,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    // Add Waypoint Markers on Map
     protected void addMarkerToMap(LatLng latlng)
     {
         Marker marker = mMap.addMarker(new MarkerOptions()
@@ -283,80 +288,6 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
         return url;
     }
-
-    /* A class to parse the Google Places in JSON format */
-    protected static class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>>
-    {
-
-        // Parsing the data in Non-UI thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
-
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                Log.d("ParserTask", jsonData[0].toString());
-                DataParser parser = new DataParser();
-                Log.d("ParserTask", parser.toString());
-
-                // Starts parsing data
-                routes = parser.parse(jObject);
-                Log.d("ParserTask", "Executing routes");
-                Log.d("ParserTask", routes.toString());
-
-            } catch (Exception e) {
-                Log.d("ParserTask", e.toString());
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        /* Executes in UI thread, after the parsing process */
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points;
-            PolylineOptions lineOptions = null;
-
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); ++i) {
-                points = new ArrayList<>();
-                lineOptions = new PolylineOptions();
-
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); ++j) {
-                    HashMap<String, String> point = path.get(j);
-
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(10);
-                lineOptions.color(Color.RED);
-
-                Log.d("onPostExecute", "onPostExecute lineoptions decoded");
-
-            }
-
-            // Drawing polyline in the Google Map for the i-th route
-            if (lineOptions != null) {
-                mMap.addPolyline(lineOptions);
-            } else {
-                Log.d("onPostExecute", "without Polylines drawn");
-            }
-        }
-    }
-
-
 
     /* Implementing onLocationResult which handles current place of the user */
     LocationCallback mLocationCallback = new LocationCallback()
