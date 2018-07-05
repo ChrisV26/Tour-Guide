@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".MainMenu"
             android:screenOrientation="portrait">
@@ -51,6 +52,7 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MapTour">
         </activity>
+        <service android:name="com.tourguideapp.android.tourguide.GeofenceTransitionsJobIntentService"/>
 
     </application>
 

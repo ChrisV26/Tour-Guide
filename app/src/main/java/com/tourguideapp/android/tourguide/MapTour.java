@@ -4,9 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -29,14 +27,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.clustering.ClusterManager;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class MapTour extends FragmentActivity implements OnMapReadyCallback
 {
@@ -56,6 +48,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
     private double dest_point_lat;
     private double dest_point_lng;
     private String correspond_waypoints;
+
     // Declare a variable for the cluster manager.
     //private ClusterManager<MyItem> mClusterManager;
 
@@ -79,6 +72,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             dest_point_lng=Dest_position.longitude;
 
         }
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -89,30 +83,31 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
         // Initializing the ArrayList and adding the corresponding Waypoints to each of the Chosen Tour
         MarkerPoints = new ArrayList<>();
-        if(correspond_waypoints.equals("First_Tour"))
+        switch (correspond_waypoints)
         {
-            MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
-            MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
-            MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
-            MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
-            MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+            case "First_Tour":
+                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
+                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
+                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
+                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
+                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+                break;
+            case "Second_Tour":
+                MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
+                MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
+                MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
+                MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
+                MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
+                break;
+            case "Third_Tour":
+                MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
+                MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
+                MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
+                MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
+                MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
+                break;
         }
-        else if(correspond_waypoints.equals("Second_Tour"))
-        {
-            MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
-            MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
-            MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
-            MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
-            MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
-        }
-        else
-        {
-            MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
-            MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
-            MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
-            MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
-            MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
-        }
+
     }
 
     /* Send the var mMap to ParserTask Class*/
@@ -172,17 +167,18 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
 
-        // Adding and Styling the predefined markers of the user's Tour Choice
-        mMap.addMarker(new MarkerOptions()
+        // Adding and Styling the predefined markers of the user's Tour choice
+        Marker Start_Pos=mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(start_point_lat,start_point_lng))
                 .title("Start")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         );
+        // Start_Pos.showInfoWindow();
 
-        mMap.addMarker(new MarkerOptions()
+        Marker End_Pos= mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(dest_point_lat,dest_point_lng))
                 .title("End"));
-
+        // End_Pos.showInfoWindow();
 
         // Adding the Waypoint Markers
         for(int i=0; i<MarkerPoints.size(); ++i)
@@ -195,6 +191,9 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
+
+        //Display Geofence
+        GeofenceMainActivity geof=new GeofenceMainActivity();
 
         // move Map Camera
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
@@ -212,43 +211,6 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
         //markers.add(marker);
 
     }
-
-
- /*   private void setUpClusterer() {
-        // Position the map.
-       mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<>(this, mMap);
-
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-       *//* mMap.setOnCameraIdleListener(mClusterManager);
-        mMap.setOnMarkerClickListener(mClusterManager);*//*
-
-        // Add cluster items (markers) to the cluster manager.
-        addItems();
-    }
-
-    private void addItems() {
-
-       // Set some lat/lng coordinates to start with.
-      *//*  double lat = 51.5145160;
-        double lng = -0.1270060;*//*
-
-      double lat=Start_position.latitude;
-      double lng=Start_position.longitude;
-
-        // Add ten cluster items in close proximity, for purposes of this example.
-        for (int i = 0; i < 4; i++) {
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat, lng);
-            mClusterManager.addItem(offsetItem);
-        }
-    }*/
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
@@ -306,18 +268,19 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback
 
                 //Place current Location Marker
                 Current_Location = new LatLng(location.getLatitude(),location.getLongitude());
-                MarkerOptions markerOptions = new MarkerOptions();
+               /* MarkerOptions markerOptions = new MarkerOptions();
                 markerOptions.position(Current_Location);
                 markerOptions.title("Current Position");
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
                 mCurrLocationMarker = mMap.addMarker(markerOptions);
-                mCurrLocationMarker.showInfoWindow();
+                mCurrLocationMarker.showInfoWindow();*/
 
 
                 // Send LatLong of current position and draw the route between current and start location
                 String url_2=getUrl(Current_Location,Start_position);
                 FetchUrl FetchUrl = new FetchUrl();
                 FetchUrl.execute(url_2);
+
                 //move map camera
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Location,11));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
