@@ -8,6 +8,13 @@
     <string name="ImageButton_2"> Syntagma-Thiseio </string>
     <string name="ImageButton_3"> Akropolis-Zappeion </string>
 
+    !-- Buttons strings -->
+    <string name="add_geofences">Add geofences</string>
+    <string name="remove_geofences">Remove geofences</string>
+
+    <string name="geofences_added">Geofences added</string>
+    <string name="geofences_removed">Geofences removed</string>
+
     <!-- Error strings -->
     <string name="geofence_not_available">Geofence service is not available now</string>
     <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
