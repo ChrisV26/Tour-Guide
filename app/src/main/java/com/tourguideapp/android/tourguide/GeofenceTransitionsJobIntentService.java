@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.JobIntentService;
@@ -34,7 +35,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
         enqueueWork(context, GeofenceTransitionsJobIntentService.class, JOB_ID, intent);
     }
 
-    /**
+    /*
      * Handles incoming intents.
      * @param intent sent by Location Services. This Intent is provided to Location
      *               Services (inside a PendingIntent) when addGeofences() is called.
@@ -135,11 +136,11 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Define the notification settings.
-        builder/*setSmallIcon(R.drawable.ic_launcher)*/
+        builder.setSmallIcon(R.drawable.map_icon)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
-               /* .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.ic_launcher))*/
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        R.drawable.map_icon))
                 .setColor(Color.RED)
                 .setContentTitle(notificationDetails)
                 .setContentText(getString(R.string.geofence_transition_notification_text))

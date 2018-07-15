@@ -1,6 +1,9 @@
 <resources>
-    <!-- Selection Screen Strings -->
+
+    <!-- App Name -->
     <string name="app_name">TourGuide</string>
+
+    <!-- Selection Screen Strings -->
     <string name="Main_Menu_Icon_Map">Icon</string>
     <string name="title_activity_map_tour">Map</string>
     <string name="Tour_Map_List">Choose your Tour</string>

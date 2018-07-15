@@ -62,27 +62,23 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
     private String correspond_waypoints;
 
     //Geofence Variables
+
     private static final String TAG = MapTour.class.getSimpleName();
 
-    /**
-            * Tracks whether the user requested to add or remove geofences, or to do neither.
-     */
+    //Tracks whether the user requested to add or remove geofences, or to do neither.
     private enum PendingGeofenceTask {
         ADD, REMOVE, NONE
     }
-    /**
-     * Provides access to the Geofencing API.
-     */
+
+    //Provides access to the Geofencing API.
     private GeofencingClient mGeofencingClient;
 
-    /**
-     * The list of geofences used in this sample.
-     */
+
+    //The list of geofences used in this sample.
     private ArrayList<Geofence> mGeofenceList;
 
-    /**
-     * Used when requesting to add or remove geofences.
-     */
+
+    //Used when requesting to add or remove geofences.
     private PendingIntent mGeofencePendingIntent;
 
     // Buttons for kicking off the process of adding or removing geofences.
@@ -148,7 +144,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
         }
 
         //Geofence Initialization
-        // Get the UI widgets.
+        // Get the UI widgets
         mAddGeofencesButton = findViewById(R.id.add_geofences_button);
         mRemoveGeofencesButton =  findViewById(R.id.remove_geofences_button);
 
@@ -175,8 +171,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
     public void onStart()
     {
         super.onStart();
-        performPendingGeofenceTask();
-
+        if(!checkPermissions())
+        {
+            checkLocationPermission();
+        }
+        else{
+            performPendingGeofenceTask();
+        }
     }
 
     @Override
@@ -337,10 +338,14 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
      * specified geofences. Handles the success or failure results returned by addGeofences().
      */
-    public void addGeofencesButtonHandler(View view) {
-
+    public void addGeofencesButtonHandler(View view)
+    {
+        if(!checkPermissions()) {
             mPendingGeofenceTask = PendingGeofenceTask.ADD;
-            addGeofences();
+            checkLocationPermission();
+            return;
+        }
+        addGeofences();
     }
 
     /**
@@ -348,7 +353,8 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
      * permission.
      */
     @SuppressWarnings("MissingPermission")
-    private void addGeofences() {
+    private void addGeofences()
+    {
 
         mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
                 .addOnCompleteListener(this);
@@ -358,9 +364,15 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
      * Removes geofences, which stops further notifications when the device enters or exits
      * previously registered geofences.
      */
-    public void removeGeofencesButtonHandler(View view) {
+    public void removeGeofencesButtonHandler(View view)
+    {
 
-        mPendingGeofenceTask = PendingGeofenceTask.REMOVE;
+        if(!checkPermissions())
+        {
+            mPendingGeofenceTask = PendingGeofenceTask.REMOVE;
+            checkLocationPermission();
+            return;
+        }
         removeGeofences();
     }
 
@@ -369,11 +381,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
      * permission.
      */
     @SuppressWarnings("MissingPermission")
-    private void removeGeofences() {
-        mGeofencingClient.removeGeofences(getGeofencePendingIntent()).addOnCompleteListener(this);
+    private void removeGeofences()
+    {
+        mGeofencingClient.removeGeofences(getGeofencePendingIntent())
+                .addOnCompleteListener(this);
     }
 
-    /**
+    /*
      * Runs when the result of calling {@link #addGeofences()} and/or {@link #removeGeofences()}
      * is available.
      * @param task the resulting Task, containing either a result or error.
@@ -395,7 +409,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
         }
     }
 
-    /**
+    /*
      * Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
      * issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
      * current list of geofences.
@@ -414,11 +428,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
         return mGeofencePendingIntent;
     }
 
-      /* This sample hard codes geofence data. A real app might dynamically create geofences based on
-     * the user's location.
-        */
-    private void populateGeofenceList() {
-        for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
+      /* This sample hard codes geofence data.
+         A real app might dynamically create geofences based on the user's location.
+       */
+    private void populateGeofenceList()
+    {
+        for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet())
+        {
 
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
@@ -438,8 +454,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
 
                     // Set the transition types of interest. Alerts are only generated for these
                     // transition. We track entry and exit transitions in this sample.
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
-                            Geofence.GEOFENCE_TRANSITION_EXIT)
+                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
 
                     // Create the geofence.
                     .build());
@@ -471,8 +486,7 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
 
    /**
             * Stores whether geofences were added ore removed in {SharedPreferences};
-     *
-             * @param added Whether geofences were added or removed.
+          * @param added Whether geofences were added or removed.
      */
     private void updateGeofencesAdded(boolean added) {
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -490,9 +504,6 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
             removeGeofences();
         }
     }
-
-
-
 
     /* Implementing onLocationResult which handles current place of the user */
     LocationCallback mLocationCallback = new LocationCallback()
@@ -532,6 +543,13 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
 
     };
 
+    /* Return the current state of the permissions needed */
+    private boolean checkPermissions()
+    {
+        int permissionState = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
 
     /* Implementing checkLocationPermission where user has to confirm for permission to use his Location  */
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
@@ -549,8 +567,9 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
                 // sees the explanation, try again to request the permission
                 new AlertDialog.Builder(this)
                         .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setMessage("This app needs the Location Permission, please accept to use Location Functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                        {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // Prompt the user once explanation has been shown
@@ -574,14 +593,17 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
 
     /* Implementing onRequestPermissionsResult where we handle user's choice for permission  */
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+                                           @NonNull int[] grantResults)
     {
-        switch (requestCode) {
+        switch (requestCode)
+        {
             case MY_PERMISSIONS_REQUEST_LOCATION:
             {
-                // If request is cancelled, the result arrays are empty
+                // If request is cancelled, the grant result arrays are empty
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
+                    performPendingGeofenceTask();
                     // permission was granted
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
@@ -594,9 +616,10 @@ public class MapTour extends FragmentActivity implements OnMapReadyCallback,OnCo
                 }
                 else
                 {
-                    // permission denied,Disable the
-                    // functionality that depends on this permission.
+                    // Permission was denied,
+                    // Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+                    mPendingGeofenceTask = PendingGeofenceTask.NONE;
                 }
                 return;
             }

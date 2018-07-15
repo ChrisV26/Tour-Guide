@@ -7,7 +7,7 @@ import android.content.Intent;
 public class GeofenceBroadcastReceiver  extends BroadcastReceiver
 {
 
-    /**
+    /*
      * Receiver for geofence transition changes.
      * Receives geofence transition events from Location Services in the form of an Intent containing
      * the transition type and geofence id(s) that triggered the transition. Creates a JobIntentService
@@ -15,7 +15,7 @@ public class GeofenceBroadcastReceiver  extends BroadcastReceiver
      */
 
 
-        /**
+        /*
          * Receives incoming intents.
          *
          * @param context the application context.

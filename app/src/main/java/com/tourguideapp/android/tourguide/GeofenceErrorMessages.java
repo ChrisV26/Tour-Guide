@@ -6,7 +6,8 @@ import android.content.res.Resources;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.GeofenceStatusCodes;
 
-public class GeofenceErrorMessages {
+public class GeofenceErrorMessages
+{
     /**
      * Prevents instantiation.
      */

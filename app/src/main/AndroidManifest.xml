@@ -10,6 +10,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <!-- Main Menu -->
         <activity
             android:name=".MainMenu"
             android:screenOrientation="portrait">
@@ -40,6 +42,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAimJcsZBrYvBOP09Zt9YSagm28OJrilqE" />
 
+        <!-- Main Activity which shows the Map -->
         <activity
             android:name=".MapTour"
             android:label="@string/title_activity_map_tour"
@@ -47,6 +50,7 @@
             android:parentActivityName=".MainMenu">
         </activity>
 
+        <!-- User's choice of preferable route -->
         <activity
             android:name=".MapTourList"
             android:label="@string/Tour_Map_List"
@@ -54,7 +58,15 @@
             android:parentActivityName=".MapTour">
         </activity>
 
-        <service android:name="com.tourguideapp.android.tourguide.GeofenceTransitionsJobIntentService"/>
+        <receiver
+            android:name=".GeofenceBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"/>
+
+        <service
+            android:name=".GeofenceTransitionsJobIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 
 </manifest>

@@ -24,7 +24,7 @@
 
     <Button
         android:id="@+id/remove_geofences_button"
-        android:layout_width="71dp"
+        android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:onClick="removeGeofencesButtonHandler"
         android:text="@string/remove_geofences" />
