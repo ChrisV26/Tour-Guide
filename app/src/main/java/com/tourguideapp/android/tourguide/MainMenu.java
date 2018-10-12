@@ -1,12 +1,13 @@
 package com.tourguideapp.android.tourguide;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 /* Main Menu of the App  */
@@ -16,7 +17,34 @@ public  class MainMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-//        isOnline();
+    }
+
+   // Check on Startup of the App if Wifi or Mobile Data is enabled
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+        // check for Network Connection
+        if(!isNetworkConnected())
+        {
+            // Create an Alert Dialog Message
+            AlertDialog.Builder builder=new AlertDialog.Builder(this);
+            builder.setMessage("Internet Connection Required,Please enable your WiFi or Mobile Data")
+                    .setCancelable(false)
+                    // kill the app
+                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i)
+                        {
+                            finish();
+
+                        }
+                    });
+            AlertDialog alert=builder.create();
+            alert.show();
+        }
+
+
     }
 
     /* Implementing the method Click_Map
@@ -28,22 +56,27 @@ public  class MainMenu extends AppCompatActivity {
         startActivity(MapChoice);
     }
 
-    private boolean isOnline()
-    {
-        boolean isConnectedWifi=false;
-        boolean isConnectedMobileData=false;
+    /* Check if the device is connected either to WiFi or Mobile Data  */
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null)  // connected to the internet
+        {
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+            {
+                // connected to WiFi
+                return true;
 
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo[]  = cm.getAllNetworkInfo();
-        for (NetworkInfo ni : netInfo) {
-            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
-                if (ni.isConnected())
-                    isConnectedWifi  = true;
-            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
-                if (ni.isConnected())
-                    isConnectedMobileData = true;
+            }
+            else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)
+            {
+                // connected to the mobile provider's data plan
+                return true;
+            }
+        } else {
+            // not connected to the internet
+            return false;
         }
-        return isConnectedWifi || isConnectedMobileData;
+        return false;
     }
 }

@@ -6,16 +6,14 @@ import android.content.res.Resources;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.GeofenceStatusCodes;
 
+/* Declaring Error Messages in case of failure of Geofence */
+
 public class GeofenceErrorMessages
 {
-    /**
-     * Prevents instantiation.
-     */
+    /* Prevents instantiation.  */
     private GeofenceErrorMessages() {}
 
-    /**
-     * Returns the error string for a geofencing exception.
-     */
+    /* Returns the error string for a geofencing exception.  */
     public static String getErrorString(Context context, Exception e) {
         if (e instanceof ApiException) {
             return getErrorString(context, ((ApiException) e).getStatusCode());
@@ -24,9 +22,7 @@ public class GeofenceErrorMessages
         }
     }
 
-    /**
-     * Returns the error string for a geofencing error code.
-     */
+    /* Returns the error string for a geofencing error code. */
     public static String getErrorString(Context context, int errorCode) {
         Resources mResources = context.getResources();
         switch (errorCode) {

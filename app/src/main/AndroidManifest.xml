@@ -40,24 +40,25 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAimJcsZBrYvBOP09Zt9YSagm28OJrilqE" />
+            android:value="@string/google_maps_key" />
 
         <!-- Main Activity which shows the Map -->
         <activity
             android:name=".MapTour"
             android:label="@string/title_activity_map_tour"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainMenu">
+            android:parentActivityName=".MapTourList">
         </activity>
 
-        <!-- User's choice of preferable route -->
+        <!-- User's choice of preferable Route -->
         <activity
             android:name=".MapTourList"
             android:label="@string/Tour_Map_List"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MapTour">
+            android:parentActivityName=".MainMenu">
         </activity>
 
+        <!-- Geofence Services -->
         <receiver
             android:name=".GeofenceBroadcastReceiver"
             android:enabled="true"

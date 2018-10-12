@@ -31,7 +31,8 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
     /**
      * Convenience method for enqueuing work in to this service.
      */
-    public static void enqueueWork(Context context, Intent intent) {
+    public static void enqueueWork(Context context, Intent intent)
+    {
         enqueueWork(context, GeofenceTransitionsJobIntentService.class, JOB_ID, intent);
     }
 
