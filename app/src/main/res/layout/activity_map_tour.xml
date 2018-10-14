@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:gravity="center">
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
@@ -21,7 +21,6 @@
         android:layout_height="wrap_content"
         android:onClick="addGeofencesButtonHandler"
         android:text="@string/add_geofences" />
-
     <Button
         android:id="@+id/remove_geofences_button"
         android:layout_width="110dp"

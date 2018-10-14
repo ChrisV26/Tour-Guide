@@ -13,12 +13,16 @@
     <string name="ImageButton_2"> Syntagma-Thiseio </string>
     <string name="ImageButton_3"> Akropolis-Zappeion </string>
 
-    <!-- Buttons strings -->
+    <!--Map Tour Buttons strings -->
     <string name="add_geofences">Add Geofences</string>
     <string name="remove_geofences">Remove Geofences</string>
 
     <string name="geofences_added">Geofences Added</string>
     <string name="geofences_removed">Geofences Removed</string>
+
+    <!-- ActionBar Menu Title Items in Map Tour-->
+    <string name="Add_Geofences">Add Geofences</string>
+    <string name="Remove_Geofences">Remove Geofences</string>
 
     <!-- Error strings -->
     <string name="geofence_not_available">Geofence service is not available now</string>
@@ -33,7 +37,7 @@
         Geofence transition error: invalid transition type %1$d
     </string>
 
-    <!-- Transition type strings -->
+    <!-- Geofence Transition type strings -->
     <string name="geofence_transition_entered">Entered</string>
     <string name="geofence_transition_exited">Exited</string>
     <string name="unknown_geofence_transition">Unknown Transition</string>

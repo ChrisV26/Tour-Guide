@@ -16,6 +16,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -174,6 +176,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         mGeofencingClient = LocationServices.getGeofencingClient(this);
     }
 
+    /* Check Location Permissions on Startup */
     @Override
     public void onStart()
     {
@@ -196,6 +199,33 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         if ( mFusedLocationProviderClient != null)
         {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+        }
+    }
+
+    /* ActionBar Menu to Add or Remove Geofences */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_geofence, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case R.id.add_geof:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
+
+            case R.id.rm_geof:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
         }
     }
 
@@ -306,7 +336,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         // Travel Mode-Walking
         String mode="mode=walking";
 
-        // Sensor enabled
+        // Sensor disabled
         String sensor = "sensor=false";
 
         // Building the parameters to the web service

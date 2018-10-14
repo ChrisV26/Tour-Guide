@@ -41,7 +41,7 @@ public class FetchUrl extends AsyncTask<String, Void, String> {
 
     }
 
-    /* A method to download Json Data from the URL */
+    /* A method to download JSON Data from the URL */
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
