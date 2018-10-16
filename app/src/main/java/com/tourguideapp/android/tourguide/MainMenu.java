@@ -3,6 +3,7 @@ package com.tourguideapp.android.tourguide;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,8 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 /* Main Menu of the App  */
-public  class MainMenu extends AppCompatActivity {
-
+public  class MainMenu extends AppCompatActivity
+{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +30,8 @@ public  class MainMenu extends AppCompatActivity {
         {
             // Create an Alert Dialog Message
             AlertDialog.Builder builder=new AlertDialog.Builder(this);
-            builder.setMessage("Internet Connection Required,Please enable your WiFi or Mobile Data")
+            builder.setMessage("Internet Connection or GPS is Required," +
+                    "Please enable your WiFi/Mobile Data or GPS")
                     .setCancelable(false)
                     // kill the app
                     .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
@@ -57,7 +59,8 @@ public  class MainMenu extends AppCompatActivity {
     }
 
     /* Check if the device is connected either to WiFi or Mobile Data  */
-    private boolean isNetworkConnected() {
+    private boolean isNetworkConnected()
+    {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null)  // connected to the internet
@@ -79,4 +82,11 @@ public  class MainMenu extends AppCompatActivity {
         }
         return false;
     }
+/*
+    private boolean isGPSEnabled()
+    {
+        LocationManager location_manager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return false;
+    }*/
 }

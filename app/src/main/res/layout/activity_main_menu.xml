@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_main_menu_screen"
     tools:context="com.tourguideapp.android.tourguide.MainMenu">
 
-    <ImageButton
-        android:onClick="Click_Map"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/Main_Menu_Icon_Map"
-        android:src="@drawable/map_icon"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_above="@+id/Athens_Icon"
+        android:layout_centerHorizontal="true"
+        android:text="@string/begin"
+        android:textStyle="italic"
+        android:textSize="25sp"/>
 
-</android.support.constraint.ConstraintLayout>
+    <ImageButton
+        android:id="@+id/Athens_Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@null"
+        android:contentDescription="@string/Main_Menu_Icon_Map"
+        android:onClick="Click_Map"
+        android:src="@drawable/athens_image_button"
+        android:visibility="visible" />
+
+</RelativeLayout>

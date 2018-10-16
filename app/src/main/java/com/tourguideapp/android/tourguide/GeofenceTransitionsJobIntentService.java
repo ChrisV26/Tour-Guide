@@ -137,11 +137,11 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Define the notification settings.
-        builder.setSmallIcon(R.drawable.map_icon)
+        builder.setSmallIcon(R.drawable.athens_image_button)
                 // In a real app, you may want to use a library like Volley
                 // to decode the Bitmap.
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),
-                        R.drawable.map_icon))
+                        R.drawable.athens_image_button))
                 .setColor(Color.RED)
                 .setContentTitle(notificationDetails)
                 .setContentText(getString(R.string.geofence_transition_notification_text))

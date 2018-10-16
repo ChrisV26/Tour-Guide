@@ -5,6 +5,15 @@
     <!-- App Name -->
     <string name="app_name">TourGuide</string>
 
+    <!-- Slides Info Screens -->
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="got_it">GOT IT</string>
+
+    <!-- Main Menu Text -->
+
+    <string name="begin"> Begin Your Tour</string>
+
     <!-- Selection Screen Strings -->
     <string name="Main_Menu_Icon_Map">Icon</string>
     <string name="title_activity_map_tour">Map</string>
@@ -12,6 +21,14 @@
     <string name="ImageButton_1">Plaka-Monastiraki</string>
     <string name="ImageButton_2"> Syntagma-Thiseio </string>
     <string name="ImageButton_3"> Akropolis-Zappeion </string>
+
+    <string name="slide1_desc">Some Info to get you started</string>
+    <string name="slide1_title">Welcome to your Personal Tour Guide</string>
+    <string name="slide2_desc"> Visit Famous Athenian Districts </string>
+    <string name="slide2_title">Choose your Tour from the List</string>
+    <string name="slide3_desc">You can Enable GeoLocation if you want Optimal Experience</string>
+    <string name="slide3_title">Be Alerted when you reach checkpoints</string>
+
 
     <!--Map Tour Buttons strings -->
     <string name="add_geofences">Add Geofences</string>

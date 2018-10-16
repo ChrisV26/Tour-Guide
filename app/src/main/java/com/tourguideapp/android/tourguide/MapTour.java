@@ -203,7 +203,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     }
 
     /* ActionBar Menu to Add or Remove Geofences */
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.appbar_geofence, menu);
         return true;
@@ -227,7 +227,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 return super.onOptionsItemSelected(item);
 
         }
-    }
+    }*/
 
     /**
      *  Manipulates the map once available.

@@ -3,4 +3,23 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- Slider Intro for Info-->
+
+    <!-- Screens background color-->
+    <color name="bg_screen1">#f64c73</color>
+    <color name="bg_screen2">#20d2bb</color>
+    <color name="bg_screen3">#3395ff</color>
+    <color name="bg_screen4">#c873f4</color>
+
+    <!-- Index dots-->
+
+    <!-- dots inactive colors -->
+    <color name="dot_inactive">#4c4c4c</color>
+
+    <!-- dots active colors -->
+    <color name="dot_active">#e5e5e5</color>
+
+    <!-- Main Menu Color -->
+    <color name="bg_main_menu_screen">#0081c7</color>
 </resources>
