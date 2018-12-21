@@ -202,33 +202,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /* ActionBar Menu to Add or Remove Geofences */
-   /* @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_geofence, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId()) {
-            case R.id.add_geof:
-                // User chose the "Settings" item, show the app settings UI...
-                return true;
-
-            case R.id.rm_geof:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
-    }*/
-
     /**
      *  Manipulates the map once available.
      *  This callback is triggered when the map is ready to be used.
