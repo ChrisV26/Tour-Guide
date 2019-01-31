@@ -3,7 +3,8 @@ package com.tourguideapp.android.tourguide;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/* Check if the user visits app for first time */
+/** Check if the user visits app for first time */
+
 public class Globals
 {
     private static SharedPreferences pref;

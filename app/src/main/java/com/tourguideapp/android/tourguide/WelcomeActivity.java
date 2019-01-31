@@ -18,7 +18,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/*  Welcome Screen Slider*/
+/**  Welcome Screen Slider */
+
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ViewPager viewPager;

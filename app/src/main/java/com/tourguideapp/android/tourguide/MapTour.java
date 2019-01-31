@@ -16,8 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -73,7 +71,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         return mMap;
     }
 
-    //Tracks whether the user requested to add or remove geofences, or to do neither.
+    //Tracks whether the user requested to add or remove geofences, or to do neither
     private enum PendingGeofenceTask
     {
         ADD, REMOVE, NONE

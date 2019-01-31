@@ -36,7 +36,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
         enqueueWork(context, GeofenceTransitionsJobIntentService.class, JOB_ID, intent);
     }
 
-    /*
+    /**
      * Handles incoming intents.
      * @param intent sent by Location Services. This Intent is provided to Location
      *               Services (inside a PendingIntent) when addGeofences() is called.

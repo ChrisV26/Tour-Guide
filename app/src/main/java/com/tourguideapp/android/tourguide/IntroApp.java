@@ -2,7 +2,8 @@ package com.tourguideapp.android.tourguide;
 
 import android.app.Application;
 
-/*  Initialize Global Data */
+/**  Initialize Global Data */
+
 public class IntroApp extends Application
 {
     @Override

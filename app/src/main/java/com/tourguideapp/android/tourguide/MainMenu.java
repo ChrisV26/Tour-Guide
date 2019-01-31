@@ -11,7 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-/* Main Menu of the App  */
+/** Main Menu of the App  */
 public  class MainMenu extends AppCompatActivity
 {
     @Override
