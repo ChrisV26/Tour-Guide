@@ -15,10 +15,10 @@ public class POI
     private int id;
 
     @JsonProperty("lat")
-    private BigDecimal lat;
+    private double lat;
 
     @JsonProperty("lng")
-    private BigDecimal lng;
+    private double lng;
 
    @JsonProperty("tourid")
    private int tourid;
@@ -31,7 +31,7 @@ public class POI
 
     public POI(){}
 
-   public POI(int id,BigDecimal lat,BigDecimal lng, int tourid, TourName tourName,String tourDescription)
+   public POI(int id,double lat,double lng, int tourid, TourName tourName,String tourDescription)
     {
         this.setId(id);
         this.setLat(lat);
@@ -48,11 +48,11 @@ public class POI
     {
         this.tourid=tourid;
     }
-    private void setLng(BigDecimal lng) {
+    private void setLng(double lng) {
         this.lng=lng;
     }
 
-    private void setLat(BigDecimal lat) {
+    private void setLat(double lat) {
         this.lat =lat;
     }
 
@@ -79,12 +79,12 @@ public class POI
     }
 
 
-    public BigDecimal getLat() {
+    public double getLat() {
         return lat;
     }
 
 
-    public BigDecimal getLng() {
+    public double getLng() {
         return lng;
     }
 

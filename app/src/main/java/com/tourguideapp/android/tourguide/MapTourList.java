@@ -25,7 +25,10 @@ import retrofit2.Response;
 public class MapTourList extends AppCompatActivity
 {
     Button BtnFirstTour,BtnSecondTour,BtnThirdTour;
-    GetDataService service;
+    double Starting_LocPoint_Lat;
+    double Starting_LocPoint_Lng;
+    double Destination_LocPoint_Lat;
+    double Destination_LocPoint_Lng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,38 +45,6 @@ public class MapTourList extends AppCompatActivity
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        /* Create handle for the Retrofit-Instance Interface */
-        service=RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
-
-        /* Call the method with parameter in the interface to get the POI data*/
-        Call<List<POI>> call=service.getPOIByTourID(1);
-
-        /* Log the URL called */
-        Log.wtf("URL Called",call.request().url() + "");
-
-        call.enqueue(new Callback<List<POI>>() {
-            @Override
-            public void onResponse(Call<List<POI>> call, Response<List<POI>> response)
-            {
-
-                if(response.isSuccessful())
-                {
-                    List<POI> poi= response.body();
-                }
-                else
-                {
-                    Log.d("RESPONSE_CODE",response.code()+"");
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<POI>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"Unable to Retrieve data",Toast.LENGTH_SHORT).show();
-                Log.d("RESPONSE_FAILURE",t.getMessage());
-            }
-        });
 
 
     }
@@ -92,7 +63,9 @@ public class MapTourList extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /** Clicking the Image-Button shows the Google Route Map */
+    /** Clicking the Image-Button shows the Google Map
+     *  and fetches async Lat/Lng Starting and Destination coordinates from the API
+     * */
     public void Click_Map_Tour(View view)
     {
         //Creating an Intent to go from MapTourList to MapTour
@@ -103,33 +76,83 @@ public class MapTourList extends AppCompatActivity
 
         switch(view.getId())
         {
+            // send Plaka-Monastiraki coordinates
             case R.id.First_Tour:
-                // send Plaka-Monastiraki coordinates
-                lat_long.putParcelable("Start_Location",new LatLng(37.970681,23.729414));
-                lat_long.putParcelable("Dest_Location",new LatLng(37.97682,23.724538));
+                FetchTourData(1);
+                lat_long.putParcelable("Start_Location",new LatLng(Starting_LocPoint_Lat,Starting_LocPoint_Lng));
+                lat_long.putParcelable("Dest_Location",new LatLng(Destination_LocPoint_Lat,Destination_LocPoint_Lng));
                 lat_long.putString("Tour_Name","First_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
+            // send Syntagma-Thisio coordinates
             case R.id.Second_Tour:
-                // send Syntagma-Thisio coordinates
-                lat_long.putParcelable("Start_Location",new LatLng(37.9757,23.7339));
-                lat_long.putParcelable("Dest_Location",new LatLng(37.9758,23.7192));
+                FetchTourData(2);
+                lat_long.putParcelable("Start_Location",new LatLng(Starting_LocPoint_Lat,Starting_LocPoint_Lng));
+                lat_long.putParcelable("Dest_Location",new LatLng(Destination_LocPoint_Lat,Destination_LocPoint_Lng));
                 lat_long.putString("Tour_Name","Second_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
 
+            // send Akropolis-Zappeion coordinates
             case R.id.Thid_Tour:
-                // send Akropolis-Zappeion coordinates
-                lat_long.putParcelable("Start_Location",new LatLng(37.971532, 23.725749));
-                lat_long.putParcelable("Dest_Location",new LatLng(37.971341,23.7365537));
+                FetchTourData(3);
+                lat_long.putParcelable("Start_Location",new LatLng(Starting_LocPoint_Lat,Starting_LocPoint_Lng));
+                lat_long.putParcelable("Dest_Location",new LatLng(Destination_LocPoint_Lat,Destination_LocPoint_Lng));
                 lat_long.putString("Tour_Name","Third_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);
                 break;
         }
+
+    }
+
+    public void FetchTourData(int i)
+    {
+        /* Create handle for the Retrofit-Instance Interface */
+        GetDataService service=RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
+
+        /* Call the method with parameter in the interface to get the POI data */
+        Call<List<POI>> call=service.getPOIByTourID(i);
+
+        /* Log the URL called */
+        Log.wtf("URL Called",call.request().url() + "");
+
+        call.enqueue(new Callback<List<POI>>() {
+            @Override
+            public void onResponse(Call<List<POI>> call, Response<List<POI>> response)
+            {
+
+                if(response.isSuccessful())
+                {
+                    List<POI> poi = response.body();
+                    Log.i("POI_RESPONSE_SIZE", String.valueOf(poi.size()));
+                   for(POI p: poi) //iterate the POI List to fetch Lat/Lng
+                   {
+                        Starting_LocPoint_Lat= poi.get(0).getLat();
+                        Starting_LocPoint_Lng=poi.get(0).getLng();
+                        Destination_LocPoint_Lat=poi.get(6).getLat();
+                        Destination_LocPoint_Lng=poi.get(6).getLng();
+                   }
+
+
+                }
+                else
+                {
+                    //Log the HTTP Response Code
+                    Log.d("RESPONSE_CODE",response.code()+"");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<POI>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Unable to Retrieve Data from Server",Toast.LENGTH_SHORT).show();
+                Log.d("RESPONSE_FAILURE",t.getMessage());
+            }
+        });
 
     }
 

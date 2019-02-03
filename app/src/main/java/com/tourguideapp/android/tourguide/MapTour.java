@@ -390,7 +390,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 .addOnCompleteListener(this);
     }
 
-    /*
+    /**
       Runs when the result of calling addGeofences() and/or  removeGeofences()
       is available.
       @param task the resulting Task, containing either a result or error.

@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/** A class to parse the Google Places in JSON format */
+/**  Parsing Google Places from JSON format */
 
 public class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>>
 {
 
-    // Parsing the data in Non-UI thread
+    /* Parsing the data in Non-UI thread */
     @Override
     protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
 

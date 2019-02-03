@@ -3,7 +3,6 @@ package com.tourguideapp.android.tourguide;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -53,7 +52,8 @@ public  class MainMenu extends AppCompatActivity
       When the user clicks on the map icon
       The Map Layout is showed
      */
-    public void Click_Map(View view) {
+    public void Click_Map(View view)
+    {
         Intent MapChoice=new Intent(this,MapTourList.class);
         startActivity(MapChoice);
     }

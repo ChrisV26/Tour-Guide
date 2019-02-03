@@ -6,7 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
-/** Instance which will be used to reach the endpoint */
+/** Interface which will be used to reach the endpoint */
 public interface GetDataService
 {
     /** Defining URL endpoints */
