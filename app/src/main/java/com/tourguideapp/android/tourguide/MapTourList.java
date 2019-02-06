@@ -109,13 +109,13 @@ public class MapTourList extends AppCompatActivity
 
     }
 
-    public void FetchTourData(int i)
+    public void FetchTourData(int tourid)
     {
         /* Create handle for the Retrofit-Instance Interface */
         GetDataService service=RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
 
         /* Call the method with parameter in the interface to get the POI data */
-        Call<List<POI>> call=service.getPOIByTourID(i);
+        Call<List<POI>> call=service.getPOIByTourID(tourid);
 
         /* Log the URL called */
         Log.wtf("URL Called",call.request().url() + "");
@@ -129,7 +129,7 @@ public class MapTourList extends AppCompatActivity
                 {
                     List<POI> poi = response.body();
                     Log.i("POI_RESPONSE_SIZE", String.valueOf(poi.size()));
-                   for(POI p: poi) //iterate the POI List to fetch Lat/Lng
+                   for(POI p: poi) //iterate the poi List to fetch Lat/Lng
                    {
                         Starting_LocPoint_Lat= poi.get(0).getLat();
                         Starting_LocPoint_Lng=poi.get(0).getLng();

@@ -38,9 +38,17 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.tourguideapp.android.tourguide.RESTClient.GetDataService;
+import com.tourguideapp.android.tourguide.RESTClient.POI;
+import com.tourguideapp.android.tourguide.RESTClient.RetrofitInstance;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnCompleteListener<Void>
 {
@@ -77,22 +85,29 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         ADD, REMOVE, NONE
     }
 
-    //Provides access to the Geofencing API.
+    //Provides access to the Geofencing API
     private GeofencingClient mGeofencingClient;
 
 
-    //The list of geofences used in this sample.
+    //The list of geofences used in this sample
     private ArrayList<Geofence> mGeofenceList;
 
 
-    //Used when requesting to add or remove geofences.
+    //Used when requesting to add or remove geofences
     private PendingIntent mGeofencePendingIntent;
 
-    // Buttons for kicking off the process of adding or removing geofences.
+    //Buttons for kicking off the process of adding or removing geofences
     private Button mAddGeofencesButton;
     private Button mRemoveGeofencesButton;
 
     private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
+
+    //Network Request-Variables
+    private double LatWaypoints ;
+    private double LngWaypoints;
+    private List<String> TourName;
+    private List<String> TourDescription;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -116,7 +131,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
         else{
             Toast.makeText(this, "Something went Wrong", Toast.LENGTH_LONG).show();
-            Log.i("Lat_Long_Bundle","NULL Lat Long");
+            Log.d("Lat_Long_Bundle","NULL Lat Long");
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used
@@ -132,25 +147,29 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         switch (correspond_waypoints)
         {
             case "First_Tour":
-                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
-                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
-                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
-                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
-                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+                FetchTourData(1);
+//                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
+//                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
+//                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
+//                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
+//                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+
                 break;
             case "Second_Tour":
-                MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
-                MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
-                MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
-                MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
-                MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
+                FetchTourData(2);
+//                MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
+//                MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
+//                MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
+//                MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
+//                MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
                 break;
             case "Third_Tour":
-                MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
-                MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
-                MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
-                MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
-                MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
+                FetchTourData(3);
+//                MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
+//                MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
+//                MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
+//                MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
+//                MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
                 break;
         }
 
@@ -198,6 +217,53 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
+    }
+
+    public void FetchTourData(final int tourid)
+    {
+        /* Create handle for the Retrofit-Instance Interface */
+        GetDataService service= RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
+
+        /* Call the method with parameter in the interface to get the POI data */
+        Call<List<POI>> call=service.getPOIByTourID(tourid);
+
+        /* Log the URL called */
+        Log.wtf("URL Called",call.request().url() + "");
+
+        call.enqueue(new Callback<List<POI>>() {
+            @Override
+            public void onResponse(Call<List<POI>> call, Response<List<POI>> response)
+            {
+
+                if(response.isSuccessful())
+                {
+                    List<POI> poi = response.body();
+                    Log.i("POI_RESPONSE_SIZE", String.valueOf(poi.size()));
+                    for(int j=1; j<poi.size(); ++j) //iterate the poi List to fetch Lat/Lng
+                    {
+                        LatWaypoints=poi.get(j).getLat();
+                        LngWaypoints=poi.get(j).getLng();
+                        MarkerPoints.add(new LatLng(LatWaypoints,LngWaypoints));
+                        addMarkerPoints();
+                    }
+
+
+                }
+                else
+                {
+                    //Log the HTTP Response Code
+                    Log.d("RESPONSE_CODE",response.code()+"");
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<POI>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Unable to Retrieve Data from Server",Toast.LENGTH_SHORT).show();
+                Log.d("RESPONSE_FAILURE",t.getMessage());
+            }
+        });
+
     }
 
     /**
@@ -253,12 +319,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 .title("End"));
         // End_Pos.showInfoWindow();
 
-        // Adding the Waypoint Markers
-        for(int i=0; i<MarkerPoints.size(); ++i)
-        {
-            LatLng position=MarkerPoints.get(i);
-            addMarkerToMap(position);
-        }
+        // Adding the Waypoint Markers to MarkerPoints List
+        addMarkerPoints();
 
         // Send LatLng and fetch directions for the Markers
         String url = getUrl(Start_position,Dest_position);
@@ -268,6 +330,16 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         // move Camera Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
 
+    }
+
+    // Adding the Waypoint Markers to MarkerPoints List
+    protected void addMarkerPoints()
+    {
+        for(int i=0; i<MarkerPoints.size(); ++i)
+        {
+            LatLng position=MarkerPoints.get(i);
+            addMarkerToMap(position);
+        }
     }
 
     // Add Waypoint Markers on Map
