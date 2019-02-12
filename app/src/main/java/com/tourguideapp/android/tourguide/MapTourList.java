@@ -109,17 +109,19 @@ public class MapTourList extends AppCompatActivity
 
     }
 
-    public void FetchTourData(int tourid)
+    /** Network Request to fetch data from API */
+    public void FetchTourData(int id)
     {
-        /* Create handle for the Retrofit-Instance Interface */
+        /* Create handle for the Retrofit-Instance */
         GetDataService service=RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
 
         /* Call the method with parameter in the interface to get the POI data */
-        Call<List<POI>> call=service.getPOIByTourID(tourid);
+        Call<List<POI>> call=service.getPOIByTourID(id);
 
         /* Log the URL called */
         Log.wtf("URL Called",call.request().url() + "");
 
+        /* make an async call */
         call.enqueue(new Callback<List<POI>>() {
             @Override
             public void onResponse(Call<List<POI>> call, Response<List<POI>> response)

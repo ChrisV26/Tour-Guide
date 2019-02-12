@@ -31,7 +31,7 @@ import java.util.HashMap;
         /*
              Map for storing information about sights in Athens.
          */
-        static final HashMap<String, LatLng> ATHENS_AREA_LANDMARKS = new HashMap<>();
+       /* static final HashMap<String, LatLng> ATHENS_AREA_LANDMARKS = new HashMap<>();
 
          static
          {
@@ -43,6 +43,6 @@ import java.util.HashMap;
 
             //Odio Irodio
             ATHENS_AREA_LANDMARKS.put("Odio Irodiou Attikou",new LatLng(37.970795, 23.724583));
-        }
+        }*/
  }
 

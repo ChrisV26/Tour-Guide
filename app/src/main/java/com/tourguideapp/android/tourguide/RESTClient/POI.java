@@ -3,7 +3,7 @@ package com.tourguideapp.android.tourguide.RESTClient;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 /** Model Class to map JSON to POJO */
 
@@ -62,13 +62,10 @@ public class POI
 
     private void setTourName(TourName tourName)
     {
-        this.tourName=tourName;
+        this.tourName= tourName;
     }
 
-    private void setTourDescription(String tourDescription)
-    {
-        this.tourDescription=tourDescription;
-    }
+    private void setTourDescription(String tourDescription) { this.tourDescription=tourDescription; }
 
 
 

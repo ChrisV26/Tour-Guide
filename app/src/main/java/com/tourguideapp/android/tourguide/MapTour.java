@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,11 +37,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.tourguideapp.android.tourguide.RESTClient.GetDataService;
 import com.tourguideapp.android.tourguide.RESTClient.POI;
 import com.tourguideapp.android.tourguide.RESTClient.RetrofitInstance;
+import com.tourguideapp.android.tourguide.RESTClient.TourName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,9 +109,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     //Network Request-Variables
     private double LatWaypoints ;
     private double LngWaypoints;
-    private List<String> TourName;
-    private List<String> TourDescription;
-
+    private TourName tourName;
+    private String tour_name;
+    private String tourDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -148,28 +152,12 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         {
             case "First_Tour":
                 FetchTourData(1);
-//                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
-//                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
-//                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
-//                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
-//                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
-
                 break;
             case "Second_Tour":
                 FetchTourData(2);
-//                MarkerPoints.add(new LatLng(37.976960, 23.740877)); //Platia kolonakiou
-//                MarkerPoints.add(new LatLng(37.981786, 23.743056)); //lykavitos
-//                MarkerPoints.add(new LatLng(37.982584, 23.734656)); //akadimia athinon
-//                MarkerPoints.add(new LatLng(37.980395, 23.727566)); //Dimotiki agora athinon
-//                MarkerPoints.add(new LatLng(37.977955, 23.716889)); // Arxaiologikos xoros Keramikou
                 break;
             case "Third_Tour":
                 FetchTourData(3);
-//                MarkerPoints.add(new LatLng(37.969766, 23.725299)); //Anafiotika
-//                MarkerPoints.add(new LatLng(37.968334, 23.741112)); //Kallimarmaro
-//                MarkerPoints.add(new LatLng(37.975382, 23.74534)); // War Museum
-//                MarkerPoints.add(new LatLng(37.975952, 23.740446)); // Benaki Museum
-//                MarkerPoints.add(new LatLng(37.974090, 23.73893)); // Votaniko Museum of National Garden
                 break;
         }
 
@@ -188,12 +176,12 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         setButtonsEnabledState();
 
         // Get the geofences used. Geofence data is hard coded in this sample.
-        populateGeofenceList();
+//        populateGeofenceList();
 
         mGeofencingClient = LocationServices.getGeofencingClient(this);
     }
 
-    /* Check Location Permissions on Startup */
+    /** Check Location Permissions on Startup */
     @Override
     public void onStart()
     {
@@ -207,29 +195,31 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
+    /** Stop location updates when Activity is no longer active */
     @Override
     public void onPause()
     {
         super.onPause();
 
-        //stop location updates when Activity is no longer active
         if ( mFusedLocationProviderClient != null)
         {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
     }
 
-    public void FetchTourData(final int tourid)
+    /** Network Request to fetch data from API */
+    public void FetchTourData(final int id)
     {
-        /* Create handle for the Retrofit-Instance Interface */
+        /* Create handle for the Retrofit-Instance */
         GetDataService service= RetrofitInstance.getRetrofitInstance().create(GetDataService.class);
 
         /* Call the method with parameter in the interface to get the POI data */
-        Call<List<POI>> call=service.getPOIByTourID(tourid);
+        Call<List<POI>> call=service.getPOIByTourID(id);
 
         /* Log the URL called */
         Log.wtf("URL Called",call.request().url() + "");
 
+        /* make an async call */
         call.enqueue(new Callback<List<POI>>() {
             @Override
             public void onResponse(Call<List<POI>> call, Response<List<POI>> response)
@@ -239,14 +229,17 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 {
                     List<POI> poi = response.body();
                     Log.i("POI_RESPONSE_SIZE", String.valueOf(poi.size()));
-                    for(int j=1; j<poi.size(); ++j) //iterate the poi List to fetch Lat/Lng
+                    for(int j=1; j<=5; ++j) //iterate the poi List to fetch Lat/Lng,TourName and Tour Description
                     {
                         LatWaypoints=poi.get(j).getLat();
                         LngWaypoints=poi.get(j).getLng();
+                        tourName=poi.get(j).getTourName();
+                        tour_name=tourName.getTourName();
+                        tourDescription=poi.get(j).getTourDescription();
                         MarkerPoints.add(new LatLng(LatWaypoints,LngWaypoints));
                         addMarkerPoints();
                     }
-
+                    populateGeofenceList();
 
                 }
                 else
@@ -259,7 +252,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
 
             @Override
             public void onFailure(Call<List<POI>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"Unable to Retrieve Data from Server",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Unable to Fetch Data from Server",Toast.LENGTH_SHORT).show();
                 Log.d("RESPONSE_FAILURE",t.getMessage());
             }
         });
@@ -312,7 +305,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 .title("Start")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         );
-        // Start_Pos.showInfoWindow();
+        Start_Pos.showInfoWindow();
 
         Marker End_Pos= mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(dest_point_lat,dest_point_lng))
@@ -327,9 +320,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         FetchUrl FetchUrl = new FetchUrl();
         FetchUrl.execute(url);
 
-        // move Camera Map
+        // zoom Camera Map to markers
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-
     }
 
     // Adding the Waypoint Markers to MarkerPoints List
@@ -339,26 +331,31 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         {
             LatLng position=MarkerPoints.get(i);
             addMarkerToMap(position);
+            mMap.addPolyline(new PolylineOptions().color(Color.RED)
+                    .addAll(
+                            MarkerPoints
+
+                    ));
         }
     }
 
-    // Add Waypoint Markers on Map
+    // Add Waypoint Markers on Google Maps
     protected void addMarkerToMap(LatLng latlng)
     {
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(latlng)
-                .title("title")
-                .snippet("snippet")
+                .title(tour_name)
+                .snippet(tourDescription)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-        //markers.add(marker);
+        //marker.add(marker);
         //marker.showInfoWindow();
 
     }
 
+
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
     {
-
         // Origin of route
         String str_origin = "origin=" + Start_position.latitude + "," + Start_position.longitude;
 
@@ -394,11 +391,11 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         return url;
     }
 
-    /* Geofence methods */
+    /* Geofence Methods */
 
-    /*
+    /**
       Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
-      Also specifies how the geofence notifications are initially triggered.
+      Also specifies how the geofence notifications are initially triggered
     */
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -415,7 +412,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         return builder.build();
     }
 
-    /*
+    /**
       Adds geofences, which sets alerts to be notified when the device enters or exits one of the
       specified geofences. Handles the success or failure results returned by addGeofences().
      */
@@ -485,7 +482,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /*
+    /**
       Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
       issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
       current list of geofences.
@@ -505,24 +502,25 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         return mGeofencePendingIntent;
     }
 
-      /*
+      /**
          This sample hard codes geofence data.
          A real app might dynamically create geofences based on the user's location.
        */
     private void populateGeofenceList()
     {
-        for (Map.Entry<String, LatLng> entry : Constants.ATHENS_AREA_LANDMARKS.entrySet())
-        {
 
+        for (int i=0; i<MarkerPoints.size(); ++i)
+        {
+            Log.d("MARKER_POINTS",String.valueOf(MarkerPoints.size()));
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
-                    .setRequestId(entry.getKey())
+                    .setRequestId("UNIQUE_ID")
 
                     // Set the circular region of this geofence.
                     .setCircularRegion(
-                            entry.getValue().latitude,
-                            entry.getValue().longitude,
+                            MarkerPoints.get(i).latitude,
+                            MarkerPoints.get(i).longitude,
                             Constants.GEOFENCE_RADIUS_IN_METERS
                     )
 
@@ -531,7 +529,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                     .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
 
                     // Set the transition types of interest. Alerts are only generated for these
-                    // transition. We track entry and exit transitions in this sample.
+                    // transition. We track entry transitions in this sample.
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
 
                     // Create the geofence
@@ -539,10 +537,10 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /*
-      Ensures that only one button is enabled at any time.
-      The Add Geofences button is enabled if the user hasn't yet added geofences.
-      The Remove Geofences button is enabled if the user has added geofences.
+    /**
+      Ensures that only one button is enabled at any time
+      The Add Geofences button is enabled if the user hasn't yet added geofences
+      The Remove Geofences button is enabled if the user has added geofences
     */
     private void setButtonsEnabledState()
     {
@@ -555,15 +553,15 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /* Returns true if geofences were added, otherwise false. */
+    /** Returns true if geofences were added, otherwise false */
     private boolean getGeofencesAdded() {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
                 Constants.GEOFENCES_ADDED_KEY, false);
     }
 
-   /*
+   /**
       Stores whether geofences were added ore removed in {SharedPreferences};
-      @param added Whether geofences were added or removed.
+      @param added Whether geofences were added or removed
    */
     private void updateGeofencesAdded(boolean added) {
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -572,7 +570,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                 .apply();
     }
 
-    /* Performs the geofencing task that was pending until location permission was granted. */
+    /** Performs the geofencing task that was pending until location permission was granted */
     private void performPendingGeofenceTask()
     {
         if (mPendingGeofenceTask == PendingGeofenceTask.ADD) {
@@ -620,7 +618,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
 
     };
 
-    /* Return the current state of the permissions needed */
+    /** Return the current state of the permissions needed */
     private boolean checkPermissions()
     {
         int permissionState = ActivityCompat.checkSelfPermission(this,
@@ -628,7 +626,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
-    /* Implementing checkLocationPermission where user has to confirm for permission to use his Location  */
+    /** Implementing checkLocationPermission where user has to confirm for permission to use his Location  */
     private static final int PERMISSIONS_REQUEST_CODE = 99;
     private void checkLocationPermission()
     {
@@ -668,7 +666,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /* Implementing onRequestPermissionsResult where we handle user's choice for permission  */
+    /** Implementing onRequestPermissionsResult where we handle user's choice for permission  */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
                                            @NonNull int[] grantResults)

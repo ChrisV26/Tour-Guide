@@ -118,13 +118,13 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
         }
 
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(getApplicationContext(), MapTour.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), MapTourList.class);
 
         // Construct a task stack.
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 
         // Add the main Activity to the task stack as the parent.
-        stackBuilder.addParentStack(MapTour.class);
+        stackBuilder.addParentStack(MapTourList.class);
 
         // Push the content Intent onto the stack.
         stackBuilder.addNextIntent(notificationIntent);
