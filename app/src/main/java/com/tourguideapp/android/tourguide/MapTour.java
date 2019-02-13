@@ -37,7 +37,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,7 +47,6 @@ import com.tourguideapp.android.tourguide.RESTClient.TourName;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -113,6 +111,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private String tour_name;
     private String tourDescription;
 
+    private ArrayList<String> GeofenceUniqueID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -167,8 +167,11 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         mAddGeofencesButton = findViewById(R.id.add_geofences_button);
         mRemoveGeofencesButton =  findViewById(R.id.remove_geofences_button);
 
-        // Empty list for storing geofences.
+        // Empty list for storing geofences
         mGeofenceList = new ArrayList<>();
+
+        // Empty list for storing Geofenences ID
+        GeofenceUniqueID=new ArrayList<>();
 
         // Initially set the PendingIntent used in addGeofences() and removeGeofences() to null.
         mGeofencePendingIntent = null;
@@ -201,7 +204,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     {
         super.onPause();
 
-        if ( mFusedLocationProviderClient != null)
+        if (mFusedLocationProviderClient!= null)
         {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
@@ -237,9 +240,11 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                         tour_name=tourName.getTourName();
                         tourDescription=poi.get(j).getTourDescription();
                         MarkerPoints.add(new LatLng(LatWaypoints,LngWaypoints));
+                        GeofenceUniqueID.add(tour_name);
                         addMarkerPoints();
+                        generatingGeofenceID();
                     }
-                    populateGeofenceList();
+
 
                 }
                 else
@@ -324,7 +329,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
     }
 
-    // Adding the Waypoint Markers to MarkerPoints List
+    // Adding the Waypoint Markers to MarkerPoints List and connect them with polyline
     protected void addMarkerPoints()
     {
         for(int i=0; i<MarkerPoints.size(); ++i)
@@ -334,7 +339,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
             mMap.addPolyline(new PolylineOptions().color(Color.RED)
                     .addAll(
                             MarkerPoints
-
                     ));
         }
     }
@@ -350,6 +354,16 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         //marker.add(marker);
         //marker.showInfoWindow();
 
+    }
+
+    // Adding Tour Name of Markers as Unique ID to Geofence List
+    private void generatingGeofenceID()
+    {
+        for(int i = 0; i< GeofenceUniqueID.size(); ++i)
+        {
+            String tourNameID= GeofenceUniqueID.get(i);
+            populateGeofenceList(tourNameID);
+        }
     }
 
 
@@ -506,16 +520,16 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
          This sample hard codes geofence data.
          A real app might dynamically create geofences based on the user's location.
        */
-    private void populateGeofenceList()
+    private void populateGeofenceList(String tourNameID)
     {
 
         for (int i=0; i<MarkerPoints.size(); ++i)
         {
-            Log.d("MARKER_POINTS",String.valueOf(MarkerPoints.size()));
+
             mGeofenceList.add(new Geofence.Builder()
                     // Set the request ID of the geofence. This is a string to identify this
                     // geofence.
-                    .setRequestId("UNIQUE_ID")
+                    .setRequestId(tourNameID)
 
                     // Set the circular region of this geofence.
                     .setCircularRegion(
