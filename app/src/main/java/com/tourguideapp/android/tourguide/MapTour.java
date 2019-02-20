@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.tourguideapp.android.tourguide.CustomInfoWindow.CustomInfoWindowMap;
 import com.tourguideapp.android.tourguide.RESTClient.GetDataService;
 import com.tourguideapp.android.tourguide.RESTClient.POI;
 import com.tourguideapp.android.tourguide.RESTClient.RetrofitInstance;
@@ -319,6 +320,10 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
 
         // Adding the Waypoint Markers to MarkerPoints List
         addMarkerPoints();
+
+        // Custom Info window in order to show the whole text of snippet
+        CustomInfoWindowMap adapter=new CustomInfoWindowMap(MapTour.this);
+        mMap.setInfoWindowAdapter(adapter);
 
         // Send LatLng and fetch directions for the Markers
         String url = getUrl(Start_position,Dest_position);

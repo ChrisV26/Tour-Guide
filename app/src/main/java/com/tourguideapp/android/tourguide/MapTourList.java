@@ -151,7 +151,7 @@ public class MapTourList extends AppCompatActivity
 
             @Override
             public void onFailure(Call<List<POI>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(),"Unable to Retrieve Data from Server",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Unable to Fetch Data from Server",Toast.LENGTH_SHORT).show();
                 Log.d("RESPONSE_FAILURE",t.getMessage());
             }
         });
