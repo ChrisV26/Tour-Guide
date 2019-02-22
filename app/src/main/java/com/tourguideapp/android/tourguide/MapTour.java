@@ -119,7 +119,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_tour);
-
+        
         // Receive the Lat Long coordinates from MapTourList
         Bundle get_long_lang=getIntent().getParcelableExtra("Chosen_Tour");
         if(get_long_lang!=null)
@@ -543,6 +543,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                             Constants.GEOFENCE_RADIUS_IN_METERS
                     )
 
+                    .setNotificationResponsiveness(1000)
+
                     // Set the expiration duration of the geofence. This geofence gets automatically
                     // removed after this period of time.
                     .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
@@ -649,11 +651,12 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private static final int PERMISSIONS_REQUEST_CODE = 99;
     private void checkLocationPermission()
     {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
+            boolean shouldProvideRationale =
+                    ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION);
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION))
+            if (shouldProvideRationale)
             {
 
                 // Show an explanation to the user *asynchronously* -- don't block
@@ -682,7 +685,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         PERMISSIONS_REQUEST_CODE);
             }
-        }
+
     }
 
     /** Implementing onRequestPermissionsResult where we handle user's choice for permission  */
@@ -694,11 +697,11 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         {
             case PERMISSIONS_REQUEST_CODE:
             {
-                // If request is cancelled, the grant result arrays are empty
+                // permission was granted
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     performPendingGeofenceTask();
-                    // permission was granted
+
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED)
@@ -708,14 +711,19 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                     }
 
                 }
+                else if(grantResults.length<= 0) // If request is cancelled, the grant result arrays are empty
+                {
+                    Log.i("PERMISSSIONS REQUEST","User Interaction was cancelled");
+                }
                 else
                 {
                     // Permission was denied,
                     // Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
                     mPendingGeofenceTask = PendingGeofenceTask.NONE;
+                    Log.i("PERMISSIONS REQUEST","User denied the functionality");
                 }
-                return;
+                //return;
             }
 
         }

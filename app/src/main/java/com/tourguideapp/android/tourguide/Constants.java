@@ -26,7 +26,7 @@ import java.util.HashMap;
         */
         static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
                 GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
-        static final float GEOFENCE_RADIUS_IN_METERS = 1209; // 1 mile, 1.2 km
+        static final float GEOFENCE_RADIUS_IN_METERS = 500;
 
         /*
              Map for storing information about sights in Athens.
