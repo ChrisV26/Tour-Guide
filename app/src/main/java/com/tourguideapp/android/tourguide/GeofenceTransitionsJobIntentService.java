@@ -69,6 +69,7 @@ public class GeofenceTransitionsJobIntentService extends JobIntentService
 
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails);
+
             Log.i(TAG, geofenceTransitionDetails);
         } else {
             // Log the error.

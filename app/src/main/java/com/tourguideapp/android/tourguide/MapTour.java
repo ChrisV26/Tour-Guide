@@ -48,24 +48,24 @@ import com.tourguideapp.android.tourguide.RESTClient.TourName;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnCompleteListener<Void>
-{
+public class MapTour extends AppCompatActivity implements OnMapReadyCallback, OnCompleteListener<Void>{
     // Google Map Variables
-
     protected static GoogleMap mMap;
     protected Marker mCurrLocationMarker;
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
     protected FusedLocationProviderClient mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
+    private LocationCallback mLocationCallback;
 
     protected LatLng point;
-    protected LatLng Current_Location;
+    protected LatLng CurrentLocation;
     protected LatLng Start_position;
     protected LatLng Dest_position;
     private double start_point_lat;
@@ -73,18 +73,20 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private double dest_point_lat;
     private double dest_point_lng;
     private String correspond_waypoints;
+    private Marker marker;
 
     // Geofence Variables
 
     private static final String TAG = MapTour.class.getSimpleName();
+
+    private static final int PERMISSIONS_REQUEST_CODE = 34;
 
     public GoogleMap getmMap() {
         return mMap;
     }
 
     //Tracks whether the user requested to add or remove geofences, or to do neither
-    private enum PendingGeofenceTask
-    {
+    private enum PendingGeofenceTask {
         ADD, REMOVE, NONE
     }
 
@@ -106,7 +108,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
 
     //Network Request-Variables
-    private double LatWaypoints ;
+    private double LatWaypoints;
     private double LngWaypoints;
     private TourName tourName;
     private String tour_name;
@@ -115,28 +117,25 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private ArrayList<String> GeofenceUniqueID;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_tour);
-        
+
         // Receive the Lat Long coordinates from MapTourList
-        Bundle get_long_lang=getIntent().getParcelableExtra("Chosen_Tour");
-        if(get_long_lang!=null)
-        {
+        Bundle get_long_lang = getIntent().getParcelableExtra("Chosen_Tour");
+        if (get_long_lang != null) {
             Start_position = get_long_lang.getParcelable("Start_Location");
             Dest_position = get_long_lang.getParcelable("Dest_Location");
-            correspond_waypoints=get_long_lang.getString("Tour_Name");
+            correspond_waypoints = get_long_lang.getString("Tour_Name");
             Log.i("Coordinates", "Coordinates OK!");
-            start_point_lat=Start_position.latitude;
-            start_point_lng=Start_position.longitude;
-            dest_point_lat=Dest_position.latitude;
-            dest_point_lng=Dest_position.longitude;
+            start_point_lat = Start_position.latitude;
+            start_point_lng = Start_position.longitude;
+            dest_point_lat = Dest_position.latitude;
+            dest_point_lng = Dest_position.longitude;
 
-        }
-        else{
+        } else {
             Toast.makeText(this, "Something went Wrong", Toast.LENGTH_LONG).show();
-            Log.d("Lat_Long_Bundle","NULL Lat Long");
+            Log.d("Lat_Long_Bundle", "NULL Lat Long");
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used
@@ -149,8 +148,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
 
         // Initializing the ArrayList and adding the corresponding Waypoints to each of the Chosen Tour
         MarkerPoints = new ArrayList<>();
-        switch (correspond_waypoints)
-        {
+
+        switch (correspond_waypoints) {
             case "First_Tour":
                 FetchTourData(1);
                 break;
@@ -166,13 +165,13 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
 
         // Get the UI widgets
         mAddGeofencesButton = findViewById(R.id.add_geofences_button);
-        mRemoveGeofencesButton =  findViewById(R.id.remove_geofences_button);
+        mRemoveGeofencesButton = findViewById(R.id.remove_geofences_button);
 
         // Empty list for storing geofences
         mGeofenceList = new ArrayList<>();
 
         // Empty list for storing Geofenences ID
-        GeofenceUniqueID=new ArrayList<>();
+        GeofenceUniqueID = new ArrayList<>();
 
         // Initially set the PendingIntent used in addGeofences() and removeGeofences() to null.
         mGeofencePendingIntent = null;
@@ -180,35 +179,39 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         setButtonsEnabledState();
 
         // Get the geofences used. Geofence data is hard coded in this sample.
-//        populateGeofenceList();
+        //populateGeofenceList();
 
         mGeofencingClient = LocationServices.getGeofencingClient(this);
+
     }
 
     /** Check Location Permissions on Startup */
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
-        if(!checkPermissions())
-        {
+        if (!checkPermissions()) {
             checkLocationPermission();
-        }
-        else{
+        } else {
             performPendingGeofenceTask();
         }
     }
 
     /** Stop location updates when Activity is no longer active */
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
-
-        if (mFusedLocationProviderClient!= null)
-        {
+        if (mFusedLocationProviderClient != null) {
             mFusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         }
+    }
+
+    /** Resume Location Updates when Activity is active again */
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+            startLocationUpdates();
+            calculateDistance();
     }
 
     /** Network Request to fetch data from API */
@@ -241,7 +244,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                         tour_name=tourName.getTourName();
                         tourDescription=poi.get(j).getTourDescription();
                         MarkerPoints.add(new LatLng(LatWaypoints,LngWaypoints));
-                        GeofenceUniqueID.add(tour_name);
+                        //GeofenceUniqueID.add(tour_name);
                         addMarkerPoints();
                         generatingGeofenceID();
                     }
@@ -326,9 +329,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         mMap.setInfoWindowAdapter(adapter);
 
         // Send LatLng and fetch directions for the Markers
-        String url = getUrl(Start_position,Dest_position);
+      /*  String url = getUrl(Start_position,Dest_position);
         FetchUrl FetchUrl = new FetchUrl();
-        FetchUrl.execute(url);
+        FetchUrl.execute(url);*/
 
         // zoom Camera Map to markers
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
@@ -351,7 +354,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     // Add Waypoint Markers on Google Maps
     protected void addMarkerToMap(LatLng latlng)
     {
-        Marker marker = mMap.addMarker(new MarkerOptions()
+        marker = mMap.addMarker(new MarkerOptions()
                 .position(latlng)
                 .title(tour_name)
                 .snippet(tourDescription)
@@ -364,13 +367,26 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     // Adding Tour Name of Markers as Unique ID to Geofence List
     private void generatingGeofenceID()
     {
-        for(int i = 0; i< GeofenceUniqueID.size(); ++i)
-        {
-            String tourNameID= GeofenceUniqueID.get(i);
-            populateGeofenceList(tourNameID);
-        }
+            //String tourNameID= GeofenceUniqueID.get(i);
+            populateGeofenceList("YOU ARRIVED");
     }
 
+    private void calculateDistance()
+    {
+        float[] results = new float[1];
+        float distance=0;
+        for(int i=0; i<MarkerPoints.size(); i++)
+        {
+            mLastLocation.distanceBetween(this.mLastLocation.getLatitude(), this.mLastLocation.getLongitude(),MarkerPoints.get(i).latitude,MarkerPoints.get(i).longitude, results);
+            distance = results[0];
+            Log.i("DistanceBetweenLoc_POI",String.valueOf(distance));
+            if(distance<=15)
+            {
+                Toast.makeText(this,"You arrived",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
@@ -528,7 +544,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     private void populateGeofenceList(String tourNameID)
     {
 
-        for (int i=0; i<MarkerPoints.size(); ++i)
+        for (int i=0; i<MarkerPoints.size(); i++)
         {
 
             mGeofenceList.add(new Geofence.Builder()
@@ -542,8 +558,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
                             MarkerPoints.get(i).longitude,
                             Constants.GEOFENCE_RADIUS_IN_METERS
                     )
-
-                    .setNotificationResponsiveness(1000)
 
                     // Set the expiration duration of the geofence. This geofence gets automatically
                     // removed after this period of time.
@@ -601,43 +615,35 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
     }
 
-    /* Implementing onLocationResult which handles current place of the user */
-    LocationCallback mLocationCallback = new LocationCallback()
-    {
-        @Override
-        public void onLocationResult(LocationResult locationResult)
-        {
-            for (Location location : locationResult.getLocations())
-            {
-                Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
-                mLastLocation = location;
-                if (mCurrLocationMarker != null)
-                {
-                    mCurrLocationMarker.remove();
-                }
 
-                //Place current Location Marker
-                Current_Location = new LatLng(location.getLatitude(),location.getLongitude());
-               /* MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(Current_Location);
-                markerOptions.title("Current Position");
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-                mCurrLocationMarker = mMap.addMarker(markerOptions);
-                mCurrLocationMarker.showInfoWindow();*/
+    private void startLocationUpdates() {
+        /* Implementing onLocationResult which handles current place of the user */
+            mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                for (Location location : locationResult.getLocations()) {
+                    Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
+                    mLastLocation = location;
+                    if (mCurrLocationMarker != null) {
+                        mCurrLocationMarker.remove();
+                    }
+                    //Place current Location Marker
+                    CurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                    calculateDistance();
 
-
-                // Send LatLong of current position and draw the route between current and start location
-                String url_2=getUrl(Current_Location,Start_position);
+                    // Send LatLong of current position and draw the route between current and start location
+               /* String url_2=getUrl(CurrentLocation,Start_position);
                 FetchUrl FetchUrl = new FetchUrl();
-                FetchUrl.execute(url_2);
+                FetchUrl.execute(url_2);*/
 
-                //move map camera
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Location,11));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                    //move map camera
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CurrentLocation, 11));
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                }
             }
-        }
 
-    };
+        };
+    }
 
     /** Return the current state of the permissions needed */
     private boolean checkPermissions()
@@ -648,7 +654,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
     }
 
     /** Implementing checkLocationPermission where user has to confirm for permission to use his Location  */
-    private static final int PERMISSIONS_REQUEST_CODE = 99;
     private void checkLocationPermission()
     {
             boolean shouldProvideRationale =
@@ -729,11 +734,5 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback,OnC
         }
 
     }
-
-
-
-
-
-
 
 } //end of class

@@ -3,6 +3,7 @@ package com.tourguideapp.android.tourguide;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -24,8 +25,8 @@ public  class MainMenu extends AppCompatActivity
     public void onStart()
     {
         super.onStart();
-        // check for Network Connection
-        if(!isNetworkConnected())
+        // check if Network Connection or GPS is enabled
+        if(!isNetworkConnected() && !isGPSEnabled())
         {
             // Create an Alert Dialog Message
             AlertDialog.Builder builder=new AlertDialog.Builder(this);
@@ -82,11 +83,11 @@ public  class MainMenu extends AppCompatActivity
         }
         return false;
     }
-/*
+
     private boolean isGPSEnabled()
     {
         LocationManager location_manager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        return false;
-    }*/
+        boolean gpsProvider=location_manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return gpsProvider;
+    }
 }

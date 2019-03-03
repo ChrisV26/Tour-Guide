@@ -46,7 +46,6 @@ public class MapTourList extends AppCompatActivity
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
     }
 
     /** Implementing the "Up Button" to go back in Parent Activity */

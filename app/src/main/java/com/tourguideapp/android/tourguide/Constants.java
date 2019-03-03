@@ -1,6 +1,7 @@
 package com.tourguideapp.android.tourguide;
 
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.HashMap;
 
 /* Declaring Geofence Places */
@@ -26,23 +27,26 @@ import java.util.HashMap;
         */
         static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
                 GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
-        static final float GEOFENCE_RADIUS_IN_METERS = 500;
+        static final float GEOFENCE_RADIUS_IN_METERS = 25;
 
-        /*
-             Map for storing information about sights in Athens.
-         */
-       /* static final HashMap<String, LatLng> ATHENS_AREA_LANDMARKS = new HashMap<>();
+
+     /*
+               Map for storing information about sights in Athens.
+           */
+       static final HashMap<String, LatLng> ATHENS_AREA_LANDMARKS = new HashMap<>();
 
          static
          {
              // Naos Olympiou Dios
-            ATHENS_AREA_LANDMARKS.put("Zeus Temple", new LatLng(37.969300, 23.7331));
+            ATHENS_AREA_LANDMARKS.put("Alkionis", new LatLng(37.990060, 23.716522));
 
             // Akropolis Museum
-            ATHENS_AREA_LANDMARKS.put("Akropolis Museum", new LatLng(37.968450, 23.728523));
+            ATHENS_AREA_LANDMARKS.put("Korinthou", new LatLng(37.990398, 23.713123));
 
-            //Odio Irodio
-            ATHENS_AREA_LANDMARKS.put("Odio Irodiou Attikou",new LatLng(37.970795, 23.724583));
-        }*/
+            ATHENS_AREA_LANDMARKS.put("Arxaiologikos Xoros",new LatLng(37.977955, 23.716889));
+
+             ATHENS_AREA_LANDMARKS.put("War Museum",new LatLng(37.975382, 23.74534));
+
+         }
  }
 
