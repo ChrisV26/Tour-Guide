@@ -210,8 +210,14 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
     public void onResume()
     {
         super.onResume();
-            startLocationUpdates();
+        if(mLastLocation!=null)
+        {
             calculateDistance();
+        }
+        else
+        {
+            startLocationUpdates();
+        }
     }
 
     /** Network Request to fetch data from API */
@@ -624,9 +630,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                 for (Location location : locationResult.getLocations()) {
                     Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                     mLastLocation = location;
-                    if (mCurrLocationMarker != null) {
+                    /*if (mCurrLocationMarker != null) {
                         mCurrLocationMarker.remove();
-                    }
+                    }*/
                     //Place current Location Marker
                     CurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                     calculateDistance();
