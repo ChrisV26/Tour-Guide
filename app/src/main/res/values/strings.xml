@@ -26,7 +26,7 @@
     <string name="slide1_title">Welcome to your Personal Tour Guide</string>
     <string name="slide2_desc"> Visit Famous Athenian Districts </string>
     <string name="slide2_title">Choose your Tour from the List</string>
-    <string name="slide3_desc">You can Enable GeoLocation if you want Optimal Experience</string>
+    <string name="slide3_desc">A pop-up Message is displayed when you reach your desired Location</string>
     <string name="slide3_title">Be Alerted when you reach checkpoints</string>
 
 

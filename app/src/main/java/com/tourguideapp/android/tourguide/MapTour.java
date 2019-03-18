@@ -2,29 +2,21 @@ package com.tourguideapp.android.tourguide;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.GeofencingClient;
-import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -38,8 +30,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.tourguideapp.android.tourguide.CustomInfoWindow.CustomInfoWindowMap;
 import com.tourguideapp.android.tourguide.RESTClient.GetDataService;
 import com.tourguideapp.android.tourguide.RESTClient.POI;
@@ -48,16 +38,15 @@ import com.tourguideapp.android.tourguide.RESTClient.TourName;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapTour extends AppCompatActivity implements OnMapReadyCallback, OnCompleteListener<Void>{
+public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
+
     // Google Map Variables
     protected static GoogleMap mMap;
-    protected Marker mCurrLocationMarker;
     protected Location mLastLocation;
     protected LocationRequest mLocationRequest;
     protected FusedLocationProviderClient mFusedLocationProviderClient;
@@ -75,8 +64,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
     private String correspond_waypoints;
     private Marker marker;
 
-    // Geofence Variables
-
     private static final String TAG = MapTour.class.getSimpleName();
 
     private static final int PERMISSIONS_REQUEST_CODE = 34;
@@ -85,28 +72,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
         return mMap;
     }
 
-    //Tracks whether the user requested to add or remove geofences, or to do neither
-    private enum PendingGeofenceTask {
-        ADD, REMOVE, NONE
-    }
-
-    //Provides access to the Geofencing API
-    private GeofencingClient mGeofencingClient;
-
-
-    //The list of geofences used in this sample
-    private ArrayList<Geofence> mGeofenceList;
-
-
-    //Used when requesting to add or remove geofences
-    private PendingIntent mGeofencePendingIntent;
-
-    //Buttons for kicking off the process of adding or removing geofences
-    private Button mAddGeofencesButton;
-    private Button mRemoveGeofencesButton;
-
-    private PendingGeofenceTask mPendingGeofenceTask = PendingGeofenceTask.NONE;
-
     //Network Request-Variables
     private double LatWaypoints;
     private double LngWaypoints;
@@ -114,7 +79,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
     private String tour_name;
     private String tourDescription;
 
-    private ArrayList<String> GeofenceUniqueID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,28 +125,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                 break;
         }
 
-        /* Geofence Initialization */
-
-        // Get the UI widgets
-        mAddGeofencesButton = findViewById(R.id.add_geofences_button);
-        mRemoveGeofencesButton = findViewById(R.id.remove_geofences_button);
-
-        // Empty list for storing geofences
-        mGeofenceList = new ArrayList<>();
-
-        // Empty list for storing Geofenences ID
-        GeofenceUniqueID = new ArrayList<>();
-
-        // Initially set the PendingIntent used in addGeofences() and removeGeofences() to null.
-        mGeofencePendingIntent = null;
-
-        setButtonsEnabledState();
-
-        // Get the geofences used. Geofence data is hard coded in this sample.
-        //populateGeofenceList();
-
-        mGeofencingClient = LocationServices.getGeofencingClient(this);
-
     }
 
     /** Check Location Permissions on Startup */
@@ -191,8 +133,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
         super.onStart();
         if (!checkPermissions()) {
             checkLocationPermission();
-        } else {
-            performPendingGeofenceTask();
         }
     }
 
@@ -250,9 +190,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                         tour_name=tourName.getTourName();
                         tourDescription=poi.get(j).getTourDescription();
                         MarkerPoints.add(new LatLng(LatWaypoints,LngWaypoints));
-                        //GeofenceUniqueID.add(tour_name);
                         addMarkerPoints();
-                        generatingGeofenceID();
                     }
 
 
@@ -370,13 +308,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
 
     }
 
-    // Adding Tour Name of Markers as Unique ID to Geofence List
-    private void generatingGeofenceID()
-    {
-            //String tourNameID= GeofenceUniqueID.get(i);
-            populateGeofenceList("YOU ARRIVED");
-    }
-
     private void calculateDistance()
     {
         float[] results = new float[1];
@@ -388,7 +319,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
             Log.i("DistanceBetweenLoc_POI",String.valueOf(distance));
             if(distance<=15)
             {
-                Toast.makeText(this,"You arrived",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"You Arrived!",Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -432,196 +363,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
         return url;
     }
 
-    /* Geofence Methods */
-
-    /**
-      Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
-      Also specifies how the geofence notifications are initially triggered
-    */
-    private GeofencingRequest getGeofencingRequest() {
-        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-
-        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
-        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
-        // is already inside that geofence.
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-
-        // Add the geofences to be monitored by geofencing service.
-        builder.addGeofences(mGeofenceList);
-
-        // Return a GeofencingRequest.
-        return builder.build();
-    }
-
-    /**
-      Adds geofences, which sets alerts to be notified when the device enters or exits one of the
-      specified geofences. Handles the success or failure results returned by addGeofences().
-     */
-    public void addGeofencesButtonHandler(View view)
-    {
-        if(!checkPermissions()) {
-            mPendingGeofenceTask = PendingGeofenceTask.ADD;
-            checkLocationPermission();
-            return;
-        }
-        addGeofences();
-    }
-
-    /* Adds geofences. This method should be called after the user has granted the location permission. */
-    @SuppressWarnings("MissingPermission")
-    private void addGeofences()
-    {
-
-        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                .addOnCompleteListener(this);
-    }
-
-    /*
-      Removes geofences, which stops further notifications when the device enters or exits
-      previously registered geofences.
-     */
-    public void removeGeofencesButtonHandler(View view)
-    {
-
-        if(!checkPermissions())
-        {
-            mPendingGeofenceTask = PendingGeofenceTask.REMOVE;
-            checkLocationPermission();
-            return;
-        }
-        removeGeofences();
-    }
-
-    /* Removes geofences. This method should be called after the user has granted the location permission. */
-    @SuppressWarnings("MissingPermission")
-    private void removeGeofences()
-    {
-        mGeofencingClient.removeGeofences(getGeofencePendingIntent())
-                .addOnCompleteListener(this);
-    }
-
-    /**
-      Runs when the result of calling addGeofences() and/or  removeGeofences()
-      is available.
-      @param task the resulting Task, containing either a result or error.
-     */
-    @Override
-    public void onComplete(@NonNull Task<Void> task)
-    {
-        mPendingGeofenceTask = PendingGeofenceTask.NONE;
-        if (task.isSuccessful()) {
-            updateGeofencesAdded(!getGeofencesAdded());
-            setButtonsEnabledState();
-
-            int messageId = getGeofencesAdded() ? R.string.geofences_added :
-                    R.string.geofences_removed;
-            Toast.makeText(this, getString(messageId), Toast.LENGTH_SHORT).show();
-        } else {
-            // Get the status code for the error and log it using a user-friendly message.
-            String errorMessage = GeofenceErrorMessages.getErrorString(this, task.getException());
-            Log.w(TAG, errorMessage);
-        }
-    }
-
-    /**
-      Gets a PendingIntent to send with the request to add or remove Geofences. Location Services
-      issues the Intent inside this PendingIntent whenever a geofence transition occurs for the
-      current list of geofences.
-
-      @return A PendingIntent for the IntentService that handles geofence transitions.
-     */
-    private PendingIntent getGeofencePendingIntent()
-    {
-        // Reuse the PendingIntent if we already have it.
-        if (mGeofencePendingIntent != null) {
-            return mGeofencePendingIntent;
-        }
-        Intent intent = new Intent(this, GeofenceBroadcastReceiver.class);
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
-        mGeofencePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        return mGeofencePendingIntent;
-    }
-
-      /**
-         This sample hard codes geofence data.
-         A real app might dynamically create geofences based on the user's location.
-       */
-    private void populateGeofenceList(String tourNameID)
-    {
-
-        for (int i=0; i<MarkerPoints.size(); i++)
-        {
-
-            mGeofenceList.add(new Geofence.Builder()
-                    // Set the request ID of the geofence. This is a string to identify this
-                    // geofence.
-                    .setRequestId(tourNameID)
-
-                    // Set the circular region of this geofence.
-                    .setCircularRegion(
-                            MarkerPoints.get(i).latitude,
-                            MarkerPoints.get(i).longitude,
-                            Constants.GEOFENCE_RADIUS_IN_METERS
-                    )
-
-                    // Set the expiration duration of the geofence. This geofence gets automatically
-                    // removed after this period of time.
-                    .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-
-                    // Set the transition types of interest. Alerts are only generated for these
-                    // transition. We track entry transitions in this sample.
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-
-                    // Create the geofence
-                    .build());
-        }
-    }
-
-    /**
-      Ensures that only one button is enabled at any time
-      The Add Geofences button is enabled if the user hasn't yet added geofences
-      The Remove Geofences button is enabled if the user has added geofences
-    */
-    private void setButtonsEnabledState()
-    {
-        if (getGeofencesAdded()) {
-            mAddGeofencesButton.setEnabled(false);
-            mRemoveGeofencesButton.setEnabled(true);
-        } else {
-            mAddGeofencesButton.setEnabled(true);
-            mRemoveGeofencesButton.setEnabled(false);
-        }
-    }
-
-    /** Returns true if geofences were added, otherwise false */
-    private boolean getGeofencesAdded() {
-        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-                Constants.GEOFENCES_ADDED_KEY, false);
-    }
-
-   /**
-      Stores whether geofences were added ore removed in {SharedPreferences};
-      @param added Whether geofences were added or removed
-   */
-    private void updateGeofencesAdded(boolean added) {
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .edit()
-                .putBoolean(Constants.GEOFENCES_ADDED_KEY, added)
-                .apply();
-    }
-
-    /** Performs the geofencing task that was pending until location permission was granted */
-    private void performPendingGeofenceTask()
-    {
-        if (mPendingGeofenceTask == PendingGeofenceTask.ADD) {
-            addGeofences();
-        } else if (mPendingGeofenceTask == PendingGeofenceTask.REMOVE) {
-            removeGeofences();
-        }
-    }
-
-
     private void startLocationUpdates() {
         /* Implementing onLocationResult which handles current place of the user */
             mLocationCallback = new LocationCallback() {
@@ -630,9 +371,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                 for (Location location : locationResult.getLocations()) {
                     Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                     mLastLocation = location;
-                    /*if (mCurrLocationMarker != null) {
-                        mCurrLocationMarker.remove();
-                    }*/
+
                     //Place current Location Marker
                     CurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                     calculateDistance();
@@ -711,8 +450,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                 // permission was granted
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
-                    performPendingGeofenceTask();
-
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
                             == PackageManager.PERMISSION_GRANTED)
@@ -731,7 +468,6 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback, On
                     // Permission was denied,
                     // Disable the functionality that depends on this permission.
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
-                    mPendingGeofenceTask = PendingGeofenceTask.NONE;
                     Log.i("PERMISSIONS REQUEST","User denied the functionality");
                 }
                 //return;
