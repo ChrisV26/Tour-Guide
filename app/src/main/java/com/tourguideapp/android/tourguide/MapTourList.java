@@ -77,9 +77,11 @@ public class MapTourList extends AppCompatActivity
         {
             // send Plaka-Monastiraki coordinates
             case R.id.First_Tour:
-                FetchTourData(1);
-                lat_long.putParcelable("Start_Location",new LatLng(Starting_LocPoint_Lat,Starting_LocPoint_Lng));
-                lat_long.putParcelable("Dest_Location",new LatLng(Destination_LocPoint_Lat,Destination_LocPoint_Lng));
+//                FetchTourData(1);
+//                lat_long.putParcelable("Start_Location",new LatLng(Starting_LocPoint_Lat,Starting_LocPoint_Lng));
+//                lat_long.putParcelable("Dest_Location",new LatLng(Destination_LocPoint_Lat,Destination_LocPoint_Lng));
+                lat_long.putParcelable("Start_Location",new LatLng(37.97068100,23.72941400));
+                lat_long.putParcelable("Dest_Location",new LatLng(37.97682000,23.72453800));
                 lat_long.putString("Tour_Name","First_Tour");
                 TourChoice.putExtra("Chosen_Tour",lat_long);
                 startActivity(TourChoice);

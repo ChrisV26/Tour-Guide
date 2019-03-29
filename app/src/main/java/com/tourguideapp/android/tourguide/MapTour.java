@@ -2,10 +2,13 @@ package com.tourguideapp.android.tourguide;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
@@ -43,7 +46,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
+public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
 
     // Google Map Variables
     protected static GoogleMap mMap;
@@ -52,6 +55,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
     protected FusedLocationProviderClient mFusedLocationProviderClient;
     protected ArrayList<LatLng> MarkerPoints;
     private LocationCallback mLocationCallback;
+    private LocationManager locationManager;
+    private Context mContext;
 
     protected LatLng point;
     protected LatLng CurrentLocation;
@@ -110,12 +115,23 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
         // Construct a FusedLocationProviderClient
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+         // Register Location Updates
+        registerLocationUpdates();
+
         // Initializing the ArrayList and adding the corresponding Waypoints to each of the Chosen Tour
         MarkerPoints = new ArrayList<>();
 
         switch (correspond_waypoints) {
             case "First_Tour":
-                FetchTourData(1);
+                //FetchTourData(1);
+                MarkerPoints.add(new LatLng(37.990398, 23.713123)); //Korinthou
+                MarkerPoints.add(new LatLng(37.990056,23.716405)); //Home
+                MarkerPoints.add(new LatLng(37.988826,23.716695)); //SuperMarket
+                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
+                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
+                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
+                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
+                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
                 break;
             case "Second_Tour":
                 FetchTourData(2);
@@ -224,9 +240,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
     {
         mMap = googleMap;
 
-        // updating every 2 minutes the current location of the user
+        // updating every 1 minute the current location of the user
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(120000); // two minute interval
+        mLocationRequest.setInterval(60000); // one minute interval
         mLocationRequest.setFastestInterval(120000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
@@ -239,6 +255,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
                 //Location Permission already granted
                 mFusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
                 mMap.setMyLocationEnabled(true);
+
             }
             else
             {
@@ -303,11 +320,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
                 .title(tour_name)
                 .snippet(tourDescription)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-        //marker.add(marker);
-        //marker.showInfoWindow();
-
     }
 
+    // calculating Distance between Last Known Location and POIs
     private void calculateDistance()
     {
         float[] results = new float[1];
@@ -319,11 +334,56 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
             Log.i("DistanceBetweenLoc_POI",String.valueOf(distance));
             if(distance<=15)
             {
-                Toast.makeText(this,"You Arrived!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"You Arrived!",Toast.LENGTH_LONG).show();
             }
         }
 
     }
+
+    private void registerLocationUpdates()
+    {
+        mContext = this;
+        locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        if (!checkPermissions()) {
+            checkLocationPermission();
+        }
+        if(mLastLocation!=null)
+        {
+            calculateDistance();
+        }
+        else
+        {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    120000,
+                    15, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    120000,
+                    15, locationListener);
+        }
+    }
+
+   LocationListener locationListener=new LocationListener() {
+       @Override
+       public void onLocationChanged(Location location) {
+           calculateDistance();
+           Log.i("Location Changed",String.valueOf(location));
+       }
+
+       @Override
+       public void onStatusChanged(String s, int i, Bundle bundle) {
+
+       }
+
+       @Override
+       public void onProviderEnabled(String s) {
+
+       }
+
+       @Override
+       public void onProviderDisabled(String s) {
+
+       }
+   };
 
     /* Implementing the getUrl method in order to fetch directions from Google Maps Directions API */
     protected String getUrl(LatLng Start_position, LatLng Dest_position)
@@ -372,14 +432,15 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback{
                     Log.i("MapsActivity", "Location: " + location.getLatitude() + " " + location.getLongitude());
                     mLastLocation = location;
 
-                    //Place current Location Marker
+                    //Current Location
                     CurrentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
                     calculateDistance();
 
                     // Send LatLong of current position and draw the route between current and start location
-               /* String url_2=getUrl(CurrentLocation,Start_position);
-                FetchUrl FetchUrl = new FetchUrl();
-                FetchUrl.execute(url_2);*/
+                     /* String url_2=getUrl(CurrentLocation,Start_position);
+                         FetchUrl FetchUrl = new FetchUrl();
+                             FetchUrl.execute(url_2);*/
 
                     //move map camera
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CurrentLocation, 11));
