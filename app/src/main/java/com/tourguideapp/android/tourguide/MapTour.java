@@ -123,15 +123,7 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
 
         switch (correspond_waypoints) {
             case "First_Tour":
-                //FetchTourData(1);
-                MarkerPoints.add(new LatLng(37.990398, 23.713123)); //Korinthou
-                MarkerPoints.add(new LatLng(37.990056,23.716405)); //Home
-                MarkerPoints.add(new LatLng(37.988826,23.716695)); //SuperMarket
-                MarkerPoints.add(new LatLng(37.969300, 23.7331));  // Naos Olympiou Dios
-                MarkerPoints.add(new LatLng(37.968450, 23.728523)); // Akropolis Museum
-                MarkerPoints.add(new LatLng(37.970795, 23.724583)); // Odio Irodiou attikou
-                MarkerPoints.add(new LatLng(37.974651, 23.721972)); // Arxaia Agora
-                MarkerPoints.add(new LatLng(37.975818, 23.719245)); // Thisio
+                FetchTourData(1);
                 break;
             case "Second_Tour":
                 FetchTourData(2);
@@ -365,8 +357,9 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
    LocationListener locationListener=new LocationListener() {
        @Override
        public void onLocationChanged(Location location) {
-           calculateDistance();
-           Log.i("Location Changed",String.valueOf(location));
+           startLocationUpdates();
+           Log.i("Location Changed", String.valueOf(location));
+
        }
 
        @Override
