@@ -339,18 +339,20 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
         if (!checkPermissions()) {
             checkLocationPermission();
         }
-        if(mLastLocation!=null)
-        {
-            calculateDistance();
-        }
-        else
-        {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+        else{
+            if(mLastLocation!=null)
+            {
+                calculateDistance();
+            }
+            else
+            {
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                     120000,
                     15, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                     120000,
                     15, locationListener);
+            }
         }
     }
 
@@ -502,7 +504,8 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
             case PERMISSIONS_REQUEST_CODE:
             {
                 // permission was granted
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                if(grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     if (ContextCompat.checkSelfPermission(this,
                             Manifest.permission.ACCESS_FINE_LOCATION)
@@ -513,18 +516,14 @@ public class MapTour extends AppCompatActivity implements OnMapReadyCallback {
                     }
 
                 }
-                else if(grantResults.length<= 0) // If request is cancelled, the grant result arrays are empty
-                {
-                    Log.i("PERMISSSIONS REQUEST","User Interaction was cancelled");
-                }
                 else
                 {
                     // Permission was denied,
                     // Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
                     Log.i("PERMISSIONS REQUEST","User denied the functionality");
                 }
-                //return;
+                return;
             }
 
         }
