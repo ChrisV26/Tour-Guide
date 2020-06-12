@@ -6,7 +6,7 @@
 #### Consists of:
 - Backend: Data is stored in MySQL and served through a REST API. 
 
-   - For more: See [Spring-REST-API](https://github.com/ChrisV26/Spring-API) repository
+   - For more: See [Spring-API](https://github.com/ChrisV26/Spring-API) repository
 - Frontend: Android consumes the JSON data with Retrofit.
 
 ### Clone 
